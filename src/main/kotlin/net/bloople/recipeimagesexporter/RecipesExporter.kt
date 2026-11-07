@@ -1,7 +1,7 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.util.Util
+import net.minecraft.client.Minecraft
+import net.minecraft.Util
 import java.awt.image.BufferedImage
 import java.nio.file.Files
 import java.nio.file.Path
@@ -12,17 +12,17 @@ import javax.imageio.stream.FileImageOutputStream
 class RecipesExporter {
     private lateinit var exportDir: Path
 
-    fun export(client: MinecraftClient): CompletableFuture<Void> {
+    fun export(client: Minecraft): CompletableFuture<Void> {
         client.sendMessage("Starting export of recipe images")
 
         val step1 = CompletableFuture.runAsync({
             client.sendMessage("Deleting any existing export")
-            exportDir = client.runDirectory.toPath().toAbsolutePath().resolve("recipe-images-exporter")
+            exportDir = client.gameDirectory.toPath().toAbsolutePath().resolve("recipe-images-exporter")
             exportDir.toFile().deleteRecursively()
             Files.createDirectories(exportDir)
 
             client.sendMessage("Deleted any existing export and created export directory $exportDir")
-        }, Util.getIoWorkerExecutor())
+        }, Util.ioPool())
 
         lateinit var recipeInfos: RecipeInfos
         lateinit var itemIconsExtractor: ItemIconsExtractor
@@ -30,7 +30,7 @@ class RecipesExporter {
 
         val step2 = step1.thenRunAsync({
             client.sendMessage("Gathering icons and labels")
-            recipeInfos = RecipeInfos(client.world!!.recipeManager)
+            recipeInfos = RecipeInfos(client.level!!.recipeManager)
             client.sendMessage("Gathered ${recipeInfos.all.size} recipes for export")
             client.sendMessage("Generating icons and labels")
 
@@ -40,7 +40,7 @@ class RecipesExporter {
             )
             itemIconsExtractor.exportIcons(client)
 
-            itemLabelsExtractor = ItemLabelsExtractor(recipeInfos.items, exportDir, client.textRenderer)
+            itemLabelsExtractor = ItemLabelsExtractor(recipeInfos.items, exportDir, client.font)
             itemLabelsExtractor.exportLabels(client)
 
             client.sendMessage("Generated icons and labels")
@@ -64,7 +64,7 @@ class RecipesExporter {
             }
 
             client.sendMessage("Export complete")
-        }, Util.getIoWorkerExecutor())
+        }, Util.ioPool())
 
         return step3
     }

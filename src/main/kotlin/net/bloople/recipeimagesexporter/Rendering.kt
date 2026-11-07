@@ -1,18 +1,22 @@
 package net.bloople.recipeimagesexporter
 
 import com.mojang.blaze3d.platform.GlConst
+import com.mojang.blaze3d.platform.Lighting
+import com.mojang.blaze3d.platform.NativeImage
+import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.systems.VertexSorter
-import net.minecraft.client.MinecraftClient.IS_SYSTEM_MAC
-import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.gl.SimpleFramebuffer
-import net.minecraft.client.render.*
-import net.minecraft.client.texture.NativeImage
-import net.minecraft.client.util.BufferAllocator
-import net.minecraft.client.util.ScreenshotRecorder
-import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexSorting
+import net.minecraft.client.gui.Font
+import net.minecraft.client.Minecraft.ON_OSX
+import net.minecraft.client.renderer.FogRenderer
+import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.client.renderer.LightTexture
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.Screenshot
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix4f
 import org.joml.Matrix4fStack
 
@@ -28,22 +32,22 @@ fun renderToTexture(
 ): NativeImage {
     RenderSystem.assertOnRenderThread()
 
-    val framebuffer = SimpleFramebuffer(width, height, true, IS_SYSTEM_MAC)
-    framebuffer.setClearColor(r, g, b, 0.0f)
-    framebuffer.resize(width, height, IS_SYSTEM_MAC)
+    val textureTarget = TextureTarget(width, height, true, ON_OSX)
+    textureTarget.setClearColor(r, g, b, 0.0f)
+    textureTarget.resize(width, height, ON_OSX)
 
     try {
         val matrixStack: Matrix4fStack = RenderSystem.getModelViewStack()
         matrixStack.pushMatrix()
         RenderSystem.applyModelViewMatrix()
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT or GlConst.GL_COLOR_BUFFER_BIT, IS_SYSTEM_MAC)
-        framebuffer.beginWrite(true)
-        BackgroundRenderer.clearFog()
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT or GlConst.GL_COLOR_BUFFER_BIT, ON_OSX)
+        textureTarget.bindWrite(true)
+        FogRenderer.setupNoFog()
         RenderSystem.enableCull()
 
         RenderSystem.viewport(0, 0, width, height)
 
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC)
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, ON_OSX)
         val matrix4f = Matrix4f().setOrtho(
             0.0f,
             (width.toDouble() / scaleFactor).toFloat(),
@@ -52,16 +56,16 @@ fun renderToTexture(
             1000.0f,
             3000.0f
         )
-        RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE)
+        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.DISTANCE_TO_ORIGIN)
         val matrixStack2 = RenderSystem.getModelViewStack()
         matrixStack2.identity()
         matrixStack2.translate(0.0f, 0.0f, -2000.0f)
         RenderSystem.applyModelViewMatrix()
-        DiffuseLighting.enableGuiDepthLighting()
+        Lighting.setupFor3DItems()
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
-        RenderSystem.setShaderTexture(0, Identifier.ofVanilla("textures/gui/widgets.png"))
+        RenderSystem.setShader(GameRenderer::getPositionTexShader)
+        RenderSystem.setShaderTexture(0, ResourceLocation.withDefaultNamespace("textures/gui/widgets.png"))
 
         RenderSystem.enableBlend()
         RenderSystem.defaultBlendFunc()
@@ -70,40 +74,40 @@ fun renderToTexture(
 
         RenderSystem.disableBlend()
 
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC)
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, ON_OSX)
 
-        framebuffer.endWrite()
+        textureTarget.unbindWrite()
         matrixStack.popMatrix()
         matrixStack.pushMatrix()
         RenderSystem.applyModelViewMatrix()
-        framebuffer.draw(width, height)
+        textureTarget.blitToScreen(width, height)
         matrixStack.popMatrix()
         RenderSystem.applyModelViewMatrix()
 
-        return ScreenshotRecorder.takeScreenshot(framebuffer)
+        return Screenshot.takeScreenshot(textureTarget)
     }
     finally {
-        framebuffer.delete()
+        textureTarget.destroyBuffers()
     }
 }
 
-fun renderText(textRenderer: TextRenderer, text: Text, x: Int, y: Int, color: Int) {
-    val matrixStack = MatrixStack()
+fun renderText(font: Font, component: Component, x: Int, y: Int, color: Int) {
+    val poseStack = PoseStack()
 
-    val immediate = VertexConsumerProvider.immediate(BufferAllocator(256))
+    val immediate = MultiBufferSource.immediate(ByteBufferBuilder(256))
 
-    textRenderer.draw(
-        text,
+    font.drawInBatch(
+        component,
         x.toFloat(),
         y.toFloat(),
         color,
         false,
-        matrixStack.peek().positionMatrix,
+        poseStack.last().pose(),
         immediate,
-        TextRenderer.TextLayerType.NORMAL,
+        Font.DisplayMode.NORMAL,
         0,
-        LightmapTextureManager.MAX_LIGHT_COORDINATE
+        LightTexture.FULL_BRIGHT
     )
 
-    immediate.draw()
+    immediate.endBatch()
 }

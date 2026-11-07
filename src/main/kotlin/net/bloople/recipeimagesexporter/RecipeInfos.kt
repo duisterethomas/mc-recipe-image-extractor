@@ -1,10 +1,10 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.recipe.RecipeManager
-import net.minecraft.recipe.RecipeType
+import net.minecraft.client.Minecraft
+import net.minecraft.world.item.crafting.RecipeManager
+import net.minecraft.world.item.crafting.RecipeType
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
 
 interface RecipeInfo {
     val recipeBasePath: String
@@ -139,22 +139,22 @@ data class SmithingRecipeInfo(
 }
 
 class RecipeInfos(recipeManager: RecipeManager) {
-    val registryLookup = MinecraftClient.getInstance().world!!.registryManager
+    val registryLookup = Minecraft.getInstance().level!!.registryAccess()
 
-    private val craftingGroups = recipeManager.listAllOfType(RecipeType.CRAFTING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertCraftingRecipe(it, registryLookup) }
-    private val smeltingGroups = recipeManager.listAllOfType(RecipeType.SMELTING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertSmeltingRecipe(it, registryLookup) }
-    private val blastingGroups = recipeManager.listAllOfType(RecipeType.BLASTING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertBlastingRecipe(it, registryLookup) }
-    private val smokingGroups = recipeManager.listAllOfType(RecipeType.SMOKING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertSmokingRecipe(it, registryLookup) }
-    private val campfireCookingGroups = recipeManager.listAllOfType(RecipeType.CAMPFIRE_COOKING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertCampfireCookingRecipe(it, registryLookup) }
-    private val stonecuttingGroups = recipeManager.listAllOfType(RecipeType.STONECUTTING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertStonecuttingRecipe(it, registryLookup) }
-    private val smithingGroups = recipeManager.listAllOfType(RecipeType.SMITHING)
-        .filterNot { it.value().isIgnoredInRecipeBook }.map { convertSmithingRecipe(it, registryLookup) }
+    private val craftingGroups = recipeManager.getAllRecipesFor(RecipeType.CRAFTING)
+        .filterNot { it.value().isSpecial }.map { convertCraftingRecipe(it, registryLookup) }
+    private val smeltingGroups = recipeManager.getAllRecipesFor(RecipeType.SMELTING)
+        .filterNot { it.value().isSpecial }.map { convertSmeltingRecipe(it, registryLookup) }
+    private val blastingGroups = recipeManager.getAllRecipesFor(RecipeType.BLASTING)
+        .filterNot { it.value().isSpecial }.map { convertBlastingRecipe(it, registryLookup) }
+    private val smokingGroups = recipeManager.getAllRecipesFor(RecipeType.SMOKING)
+        .filterNot { it.value().isSpecial }.map { convertSmokingRecipe(it, registryLookup) }
+    private val campfireCookingGroups = recipeManager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING)
+        .filterNot { it.value().isSpecial }.map { convertCampfireCookingRecipe(it, registryLookup) }
+    private val stonecuttingGroups = recipeManager.getAllRecipesFor(RecipeType.STONECUTTING)
+        .filterNot { it.value().isSpecial }.map { convertStonecuttingRecipe(it, registryLookup) }
+    private val smithingGroups = recipeManager.getAllRecipesFor(RecipeType.SMITHING)
+        .filterNot { it.value().isSpecial }.map { convertSmithingRecipe(it, registryLookup) }
 
     val groups = listOf(
         craftingGroups,

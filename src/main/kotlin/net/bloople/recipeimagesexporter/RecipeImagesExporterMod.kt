@@ -6,8 +6,8 @@ import net.fabricmc.api.*
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import net.minecraft.client.MinecraftClient
-import net.minecraft.command.CommandRegistryAccess
+import net.minecraft.client.Minecraft
+import net.minecraft.commands.CommandBuildContext
 import org.slf4j.Logger
 import java.util.concurrent.CompletionException
 
@@ -24,7 +24,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
         LOGGER.info("onInitializeClient()")
 
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback {
-            dispatcher: CommandDispatcher<FabricClientCommandSource?>, _: CommandRegistryAccess? ->
+            dispatcher: CommandDispatcher<FabricClientCommandSource?>, _: CommandBuildContext? ->
             dispatcher.register(
                 ClientCommandManager.literal("export-recipe-images").executes {
                     context: CommandContext<FabricClientCommandSource> ->
@@ -37,7 +37,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
         LOGGER.info("end onInitializeClient()")
     }
 
-    private fun export(client: MinecraftClient) {
+    private fun export(client: Minecraft) {
         try {
             if(exportRunning) {
                 client.sendMessage("Please wait for the current export to complete before starting another one")
@@ -55,7 +55,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
         }
     }
 
-    private fun handleException(client: MinecraftClient, throwable: Throwable?) {
+    private fun handleException(client: Minecraft, throwable: Throwable?) {
         LOGGER.error("Caught exception during export", throwable)
         exportRunning = false
         client.sendMessage("Export failed due to an error, see log for details")

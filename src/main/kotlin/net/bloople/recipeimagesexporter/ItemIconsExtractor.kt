@@ -1,8 +1,8 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.item.ItemStack
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.world.item.ItemStack
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.nio.file.Path
@@ -17,7 +17,7 @@ class ItemIconsExtractor(
     private val chunks = itemStacks.chunked(1000).mapIndexed { index, itemStacks -> Chunk(itemStacks, index) }
     lateinit var icons: Map<String, BufferedImage>
 
-    fun exportIcons(client: MinecraftClient) {
+    fun exportIcons(client: Minecraft) {
         client.sendMessage("Generating icons")
         var iconsCount = 0
         for(chunk in chunks) {
@@ -50,16 +50,16 @@ class ItemIconsExtractor(
             val g = background.green / 255.0f
             val b = background.blue / 255.0f
 
-            val client = MinecraftClient.getInstance()
+            val client = Minecraft.getInstance()
 
             val nativeImage = renderToTexture(width, height, r, g, b, 2.0) {
-                val context = DrawContext(client, client.bufferBuilders.entityVertexConsumers)
+                val context = GuiGraphics(client, client.renderBuffers().bufferSource())
 
                 var x = 0
                 var y = 0
                 for(itemStack in itemStacks) {
-                    context.drawItem(itemStack, x, y)
-                    context.drawItemInSlot(client.textRenderer, itemStack, x, y)
+                    context.renderItem(itemStack, x, y)
+                    context.renderItemDecorations(client.font, itemStack, x, y)
 
                     x += 17
                     if(x >= scaledWidth) {
@@ -68,10 +68,10 @@ class ItemIconsExtractor(
                     }
                 }
 
-                context.draw()
+                context.flush()
             }
 
-            nativeImage.use { it.writeTo(iconsPath.toFile()) }
+            nativeImage.use { it.writeToFile(iconsPath.toFile()) }
         }
 
         private fun getImage(): BufferedImage {

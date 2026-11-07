@@ -1,11 +1,11 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
-import net.minecraft.registry.Registries
+import net.minecraft.client.Minecraft
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.core.registries.BuiltInRegistries
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.Graphics2D
@@ -22,7 +22,7 @@ fun <T> Array<out T>.getOrLast(index: Int): T? {
     return if (index in 0..lastIndex) get(index) else get(lastIndex)
 }
 
-val Item.identifier: Identifier get() = Registries.ITEM.getId(this)
+val Item.identifier: ResourceLocation get() = BuiltInRegistries.ITEM.getKey(this)
 
 val ItemStack.uniqueKey: String get() = "${item.identifier}:$count"
 
@@ -52,15 +52,15 @@ inline fun <R> Graphics2D.use(block: Graphics2D.() -> R): R {
     }
 }
 
-fun MinecraftClient.sendMessage(message: Text) {
+fun Minecraft.sendMessage(message: Component) {
     execute {
-        inGameHud.chatHud.addMessage(message)
-        narratorManager.narrate(message)
+        gui.chat.addMessage(message)
+        narrator.sayChat(message)
     }
 }
 
-fun MinecraftClient.sendMessage(message: String) {
-    sendMessage(Text.literal(message))
+fun Minecraft.sendMessage(message: String) {
+    sendMessage(Component.literal(message))
 }
 
 fun getLogger(name: String): Logger {

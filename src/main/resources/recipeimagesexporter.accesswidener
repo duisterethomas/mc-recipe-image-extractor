@@ -1,7 +1,7 @@
 accessWidener v2 named
-accessible field net/minecraft/recipe/SmithingTransformRecipe template Lnet/minecraft/recipe/Ingredient;
-accessible field net/minecraft/recipe/SmithingTransformRecipe base Lnet/minecraft/recipe/Ingredient;
-accessible field net/minecraft/recipe/SmithingTransformRecipe addition Lnet/minecraft/recipe/Ingredient;
-accessible field net/minecraft/recipe/SmithingTrimRecipe template Lnet/minecraft/recipe/Ingredient;
-accessible field net/minecraft/recipe/SmithingTrimRecipe base Lnet/minecraft/recipe/Ingredient;
-accessible field net/minecraft/recipe/SmithingTrimRecipe addition Lnet/minecraft/recipe/Ingredient;
+accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe template Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/SmithingTransformRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe template Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe base Lnet/minecraft/world/item/crafting/Ingredient;
+accessible field net/minecraft/world/item/crafting/SmithingTrimRecipe addition Lnet/minecraft/world/item/crafting/Ingredient;

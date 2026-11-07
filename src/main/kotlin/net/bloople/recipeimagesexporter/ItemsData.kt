@@ -1,7 +1,7 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
 import java.awt.image.BufferedImage
 
 data class ItemsData(

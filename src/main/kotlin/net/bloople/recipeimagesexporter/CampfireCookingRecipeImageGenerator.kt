@@ -1,6 +1,6 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.item.ItemStack
+import net.minecraft.world.item.ItemStack
 import java.awt.image.BufferedImage
 import java.lang.Integer.max
 import javax.imageio.ImageIO
