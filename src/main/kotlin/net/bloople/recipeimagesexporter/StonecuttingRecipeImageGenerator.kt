@@ -20,7 +20,7 @@ class StonecuttingRecipeImageGenerator(
 
             createGraphics().use {
                 drawImage(itemsData.iconImage(recipeInfo.slot), 10, 46, null)
-                drawImage(itemsData.iconImage(recipeInfo.slot), 53, 21, null)
+                drawImage(itemsData.iconImage(recipeInfo.output), 53, 21, null)
                 drawImage(itemsData.iconImage(recipeInfo.output), 120, 46, null)
 
                 val x = 8
