@@ -10,7 +10,7 @@ class CampfireCookingRecipeImageGenerator(
     private val recipeInfo: CampfireCookingRecipeInfo,
     private val itemsData: ItemsData
 ) : RecipeImageGenerator {
-    override val width = max(166 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 44 + 8)
+    override val width = max(166 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
     override val height = 120
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
@@ -22,12 +22,10 @@ class CampfireCookingRecipeImageGenerator(
                 drawImage(itemsData.iconImage(recipeInfo.slot), 10, 10, null)
                 drawImage(itemsData.iconImage(recipeInfo.output), 126, 10, null)
 
-                val x = 8
                 var y = 50
-
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
-                    drawImage(itemsData.labelImage(item), 44, y + 6, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), 8, y, null)
+                    drawImage(itemsData.labelImage(item), 46, y + 8, null)
                     y += 34
                 }
             }

@@ -12,7 +12,7 @@ class SmokingRecipeImageGenerator(
     private val recipeInfo: SmokingRecipeInfo,
     private val itemsData: ItemsData
 ) : RecipeImageGenerator {
-    override val width = max(178 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 44 + 8)
+    override val width = max(178 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
     override val height = 192
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
@@ -26,12 +26,10 @@ class SmokingRecipeImageGenerator(
                 drawImage(itemsData.iconImage(coalStack), 10, 82, null)
                 drawImage(itemsData.iconImage(recipeInfo.output), 130, 46, null)
 
-                val x = 8
                 var y = 122
-
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
-                    drawImage(itemsData.labelImage(item), 44, y + 6, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), 8, y, null)
+                    drawImage(itemsData.labelImage(item), 46, y + 8, null)
                     y += 34
                 }
             }

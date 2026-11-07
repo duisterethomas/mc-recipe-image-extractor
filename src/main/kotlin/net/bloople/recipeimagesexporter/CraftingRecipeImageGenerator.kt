@@ -10,7 +10,7 @@ class CraftingRecipeImageGenerator(
     private val recipeInfo: CraftingRecipeInfo,
     private val itemsData: ItemsData
 ) : RecipeImageGenerator {
-    override val width = max(214 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 44 + 8)
+    override val width = max(214 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
     override val height = 122 + bottomImage.height + 6 + (recipeInfo.items.size * 30) + (max(recipeInfo.items.size - 1, 0) * 4)
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
@@ -31,12 +31,10 @@ class CraftingRecipeImageGenerator(
                 if(recipeInfo.slot9 != null) drawImage(itemsData.iconImage(recipeInfo.slot9), 82, 82, null)
                 drawImage(itemsData.iconImage(recipeInfo.output), 166, 46, null)
 
-                val x = 8
                 var y = 122
-
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
-                    drawImage(itemsData.labelImage(item), 44, y + 6, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), 8, y, null)
+                    drawImage(itemsData.labelImage(item), 46, y + 8, null)
                     y += 34
                 }
             }

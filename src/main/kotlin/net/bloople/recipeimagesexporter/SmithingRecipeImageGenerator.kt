@@ -10,8 +10,8 @@ class SmithingRecipeImageGenerator(
     private val recipeInfo: SmithingRecipeInfo,
     private val itemsData: ItemsData
 ) : RecipeImageGenerator {
-    override val width = max(264 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 44 + 8)
-    override val height = 154
+    override val width = max(230 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
+    override val height = baseImage.height
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
@@ -28,7 +28,7 @@ class SmithingRecipeImageGenerator(
 
                 for(item in recipeInfo.items) {
                     drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
-                    drawImage(itemsData.labelImage(item), 44, y + 6, null)
+                    drawImage(itemsData.labelImage(item), 46, y + 8, null)
                     y += 34
                 }
             }
