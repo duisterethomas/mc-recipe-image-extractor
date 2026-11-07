@@ -1,9 +1,0 @@
-{
-  "required": true,
-  "package": "net.bloople.recipeimagesexporter.mixins",
-  "compatibilityLevel": "JAVA_${java}",
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "mixins": []
-}

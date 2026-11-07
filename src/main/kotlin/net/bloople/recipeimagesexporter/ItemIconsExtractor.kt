@@ -3,6 +3,7 @@ package net.bloople.recipeimagesexporter
 import net.bloople.recipeimagesexporter.CraftingRecipeImageGenerator.Companion.slotBackground
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.font.TextRenderer
+import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.item.ItemStack
 import java.awt.Color
@@ -54,12 +55,16 @@ class ItemIconsExtractor(
             val g = background.green / 255.0f
             val b = background.blue / 255.0f
 
+            val client = MinecraftClient.getInstance()
+
             val nativeImage = renderToTexture(width, height, r, g, b, 2.0) {
+                val context = DrawContext(client, client.bufferBuilders.entityVertexConsumers)
+
                 var x = 0
                 var y = 0
                 for(itemStack in itemStacks) {
-                    itemRenderer.renderInGui(itemStack, x, y)
-                    itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, x, y)
+                    context.drawItem(itemStack, x, y)
+                    context.drawItemInSlot(client.textRenderer, itemStack, x, y)
 
                     x += 17
                     if(x >= scaledWidth) {
@@ -67,6 +72,8 @@ class ItemIconsExtractor(
                         y += 17
                     }
                 }
+
+                context.draw()
             }
 
             nativeImage.use { it.writeTo(iconsPath.toFile()) }
