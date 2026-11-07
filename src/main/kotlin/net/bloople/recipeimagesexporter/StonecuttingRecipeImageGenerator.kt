@@ -19,15 +19,15 @@ class StonecuttingRecipeImageGenerator(
             raster.setRect(width - 2, 0, rightImage.getData(0, 0, 2, height))
 
             createGraphics().use {
-                drawImage(itemsData.slotImage(recipeInfo.slot), 11, 47, null)
-                drawImage(itemsData.transparentSlotImage(recipeInfo.slot), 54, 22, null)
-                drawImage(itemsData.outputImage(recipeInfo.output), 119, 45, null)
+                drawImage(itemsData.iconImage(recipeInfo.slot), 10, 46, null)
+                drawImage(itemsData.iconImage(recipeInfo.slot), 53, 21, null)
+                drawImage(itemsData.iconImage(recipeInfo.output), 120, 46, null)
 
                 val x = 8
                 var y = 94
 
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.slotLabelImage(ItemStack(item, 1)), x, y, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
                     drawImage(itemsData.labelImage(item), 44, y + 6, null)
                     y += 34
                 }

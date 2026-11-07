@@ -21,16 +21,16 @@ class SmeltingRecipeImageGenerator(
             raster.setRect(width - 2, 0, rightImage.getData(0, 0, 2, height))
 
             createGraphics().use {
-                drawImage(itemsData.slotImage(recipeInfo.slot), 11, 11, null)
+                drawImage(itemsData.iconImage(recipeInfo.slot), 10, 10, null)
                 val coalStack = ItemStack(Registries.ITEM.get(Identifier.of("coal")), 1)
-                drawImage(itemsData.slotImage(coalStack), 11, 83, null)
-                drawImage(itemsData.outputImage(recipeInfo.output), 130, 46, null)
+                drawImage(itemsData.iconImage(coalStack), 10, 82, null)
+                drawImage(itemsData.iconImage(recipeInfo.output), 130, 46, null)
 
                 val x = 8
                 var y = 122
 
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.slotLabelImage(ItemStack(item, 1)), x, y, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
                     drawImage(itemsData.labelImage(item), 44, y + 6, null)
                     y += 34
                 }

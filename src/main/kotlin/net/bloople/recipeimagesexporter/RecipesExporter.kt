@@ -37,8 +37,6 @@ class RecipesExporter {
             itemIconsExtractor = ItemIconsExtractor(
                 recipeInfos.itemStacks,
                 exportDir,
-                client.itemRenderer,
-                client.textRenderer
             )
             itemIconsExtractor.exportIcons(client)
 

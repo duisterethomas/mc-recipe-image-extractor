@@ -19,14 +19,14 @@ class CampfireCookingRecipeImageGenerator(
             raster.setRect(width - 2, 0, rightImage.getData(0, 0, 2, height))
 
             createGraphics().use {
-                drawImage(itemsData.slotImage(recipeInfo.slot), 11, 11, null)
-                drawImage(itemsData.slotImage(recipeInfo.output), 127, 11, null)
+                drawImage(itemsData.iconImage(recipeInfo.slot), 10, 10, null)
+                drawImage(itemsData.iconImage(recipeInfo.output), 126, 10, null)
 
                 val x = 8
                 var y = 50
 
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.slotLabelImage(ItemStack(item, 1)), x, y, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
                     drawImage(itemsData.labelImage(item), 44, y + 6, null)
                     y += 34
                 }

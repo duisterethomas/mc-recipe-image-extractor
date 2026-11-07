@@ -1,10 +1,7 @@
 package net.bloople.recipeimagesexporter
 
-import net.bloople.recipeimagesexporter.CraftingRecipeImageGenerator.Companion.slotBackground
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.item.ItemRenderer
 import net.minecraft.item.ItemStack
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -16,17 +13,15 @@ import kotlin.math.sqrt
 class ItemIconsExtractor(
     itemStacks: List<ItemStack>,
     private val exportDir: Path,
-    private val itemRenderer: ItemRenderer,
-    private val textRenderer: TextRenderer
 ) {
-    private val chunks = itemStacks.chunked(chunkSize).mapIndexed { index, itemStacks -> Chunk(itemStacks, index) }
+    private val chunks = itemStacks.chunked(1000).mapIndexed { index, itemStacks -> Chunk(itemStacks, index) }
     lateinit var icons: Map<String, BufferedImage>
 
     fun exportIcons(client: MinecraftClient) {
         client.sendMessage("Generating icons")
         var iconsCount = 0
         for(chunk in chunks) {
-            chunk.exportIcons(slotBackground)
+            chunk.exportIcons(Color(139, 139, 139))
             chunk.findMaskColor()
             chunk.exportIcons(chunk.maskColor)
             iconsCount += chunk.size
@@ -106,9 +101,5 @@ class ItemIconsExtractor(
                 itemStack.uniqueKey to image
             }.toMap()
         }
-    }
-
-    companion object {
-        private const val chunkSize = 1000
     }
 }

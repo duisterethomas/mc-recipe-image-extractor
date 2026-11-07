@@ -19,15 +19,15 @@ class SmithingRecipeImageGenerator(
             raster.setRect(width - 2, 0, rightImage.getData(0, 0, 2, height))
 
             createGraphics().use {
-                drawImage(itemsData.slotImage(recipeInfo.slotBase), 11, 11, null)
-                drawImage(itemsData.slotImage(recipeInfo.slotAddition), 109, 11, null)
-                drawImage(itemsData.outputImage(recipeInfo.output), 225, 11, null)
+                drawImage(itemsData.iconImage(recipeInfo.slotBase), 10, 10, null)
+                drawImage(itemsData.iconImage(recipeInfo.slotAddition), 108, 10, null)
+                drawImage(itemsData.iconImage(recipeInfo.output), 224, 10, null)
 
                 val x = 8
                 var y = 50
 
                 for(item in recipeInfo.items) {
-                    drawImage(itemsData.slotLabelImage(ItemStack(item, 1)), x, y, null)
+                    drawImage(itemsData.iconImage(ItemStack(item, 1)), x, y, null)
                     drawImage(itemsData.labelImage(item), 44, y + 6, null)
                     y += 34
                 }

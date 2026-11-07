@@ -8,20 +8,13 @@ import net.minecraft.util.Identifier
 import net.minecraft.registry.Registries
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.awt.AlphaComposite
-import java.awt.Color
 import java.awt.Graphics2D
-import java.awt.Image
 import java.awt.Rectangle
-import java.awt.geom.AffineTransform
-import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.awt.image.Raster
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.ceil
 import kotlin.reflect.KClass
 
 fun <T> Array<out T>.getOrLast(index: Int): T? {
@@ -31,16 +24,10 @@ fun <T> Array<out T>.getOrLast(index: Int): T? {
 
 val Item.identifier: Identifier get() = Registries.ITEM.getId(this)
 
-val Identifier.itemResourceLocation: Identifier get() = Identifier.of(namespace, "textures/item/$path.png")
-
 val ItemStack.uniqueKey: String get() = "${item.identifier}:$count"
 
 fun decodeBase64(input: String): InputStream {
     return ByteArrayInputStream(Base64.getDecoder().decode(input))
-}
-
-fun Raster.createChild(parentX: Int, parentY: Int, width: Int, height: Int): Raster {
-    return this.createChild(parentX, parentY, width, height, parentX, parentY, null)
 }
 
 fun BufferedImage.asARGB(): BufferedImage {
@@ -52,88 +39,8 @@ fun BufferedImage.asARGB(): BufferedImage {
     }
 }
 
-fun BufferedImage.blankClone(): BufferedImage {
-    return BufferedImage(width, height, type)
-}
-
 fun BufferedImage.getData(x: Int, y: Int, width: Int, height: Int): Raster {
     return this.getData(Rectangle(x, y, width, height)).createTranslatedChild(0, 0)
-}
-
-// Based on https://stackoverflow.com/a/46211880
-fun BufferedImage.scaleImage(w2: Int, h2: Int): BufferedImage {
-    // Create a new image of the proper size
-    val scalex = w2 / width.toDouble()
-    val scaley = h2 / height.toDouble()
-    val after = BufferedImage(w2, h2, type)
-    val scaleInstance = AffineTransform.getScaleInstance(scalex, scaley)
-    val scaleOp = AffineTransformOp(scaleInstance, AffineTransformOp.TYPE_BICUBIC)
-    scaleOp.filter(this, after)
-    return after
-}
-
-// Based on https://stackoverflow.com/a/46211880
-fun BufferedImage.scaleImage(h2: Int): BufferedImage {
-    // Create a new image of the proper size
-    val scaley = h2 / height.toDouble()
-    val w2 = ceil(width.toDouble() * scaley).toInt()
-
-    val after = BufferedImage(w2, h2, type)
-    val scaleInstance = AffineTransform.getScaleInstance(scaley, scaley)
-    val scaleOp = AffineTransformOp(scaleInstance, AffineTransformOp.TYPE_BICUBIC)
-    scaleOp.filter(this, after)
-    return after
-}
-
-// Based on https://stackoverflow.com/a/47994302
-fun BufferedImage.rotateImage(degrees: Double): BufferedImage {
-    val affineTransform = AffineTransform.getRotateInstance(
-        degrees * (PI / 180.0),
-        width / 2.0,
-        height / 2.0)
-    val affineTransformOp = AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BICUBIC)
-    return affineTransformOp.filter(this, null)
-}
-
-private fun createFlipTransform(mode: ImageFlipMode, imageWidth: Double, imageHeight: Double): AffineTransform {
-    return when(mode) {
-        ImageFlipMode.NORMAL -> AffineTransform()
-        ImageFlipMode.TOP_BOTTOM -> {
-            AffineTransform(doubleArrayOf(1.0, 0.0, 0.0, -1.0)).apply { translate(0.0, -imageHeight) }
-        }
-        ImageFlipMode.LEFT_RIGHT -> {
-            AffineTransform(doubleArrayOf(-1.0, 0.0, 0.0, 1.0)).apply { translate(-imageWidth, 0.0) }
-        }
-        ImageFlipMode.TOP_BOTTOM_LEFT_RIGHT -> {
-            AffineTransform(doubleArrayOf(-1.0, 0.0, 0.0, -1.0)).apply { translate(-imageWidth, -imageHeight) }
-        }
-    }
-}
-
-enum class ImageFlipMode {
-    NORMAL,
-    TOP_BOTTOM,
-    LEFT_RIGHT,
-    TOP_BOTTOM_LEFT_RIGHT
-}
-
-// Based on https://www.informit.com/articles/article.aspx?p=23667&seqNum=11
-
-fun BufferedImage.flipImage(mode: ImageFlipMode): BufferedImage {
-    val affineTransform =
-        createFlipTransform(mode, width.toDouble(), height.toDouble())
-    val affineTransformOp = AffineTransformOp(affineTransform, AffineTransformOp.TYPE_BICUBIC)
-    return affineTransformOp.filter(this, null)
-}
-
-fun BufferedImage.fillBackground(background: Color): BufferedImage {
-    return blankClone().apply {
-        createGraphics().use {
-            color = background
-            fillRect(0, 0, width, height)
-            drawImage(this@fillBackground)
-        }
-    }
 }
 
 inline fun <R> Graphics2D.use(block: Graphics2D.() -> R): R {
@@ -143,16 +50,6 @@ inline fun <R> Graphics2D.use(block: Graphics2D.() -> R): R {
     finally {
         dispose()
     }
-}
-
-inline fun <R> Graphics2D.applyComposite(newComposite: AlphaComposite, block: Graphics2D.() -> R): R {
-    val oldComposite = composite
-    composite = newComposite
-    return block(this).apply { composite = oldComposite }
-}
-
-fun Graphics2D.drawImage(image: Image) {
-    drawImage(image, 0, 0, null)
 }
 
 fun MinecraftClient.sendMessage(message: Text) {
