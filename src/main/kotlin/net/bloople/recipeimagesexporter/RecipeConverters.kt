@@ -145,8 +145,12 @@ fun convertStonecuttingRecipe(recipe: RecipeEntry<StonecuttingRecipe>, registryL
 fun convertSmithingRecipe(recipe: RecipeEntry<SmithingRecipe>, registryLookup: RegistryWrapper.WrapperLookup): List<SmithingRecipeInfo> {
     val recipePath = "smithing/${recipe.id.namespace}/${recipe.id.path}"
 
-    val base = recipe.value().javaClass.getDeclaredField("base").get(recipe.value()) as Ingredient
-    val addition = recipe.value().javaClass.getDeclaredField("addition").get(recipe.value()) as Ingredient
+    val value = recipe.value()
+    val (base, addition) = when (value) {
+        is SmithingTransformRecipe -> value.base to value.addition
+        is SmithingTrimRecipe -> value.base to value.addition
+        else -> return emptyList()
+    }
 
     val maxStacksSize = arrayOf(base, addition).maxOf { it.matchingStacks.size }
 
@@ -159,7 +163,7 @@ fun convertSmithingRecipe(recipe: RecipeEntry<SmithingRecipe>, registryLookup: R
                 if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
                 base.matchingStacks.getOrLast(index)!!,
                 addition.matchingStacks.getOrLast(index)!!,
-                recipe.value().getResult(registryLookup)
+                value.getResult(registryLookup)
             )
         )
     }
