@@ -146,13 +146,13 @@ fun convertSmithingRecipe(recipe: RecipeEntry<SmithingRecipe>, registryLookup: R
     val recipePath = "smithing/${recipe.id.namespace}/${recipe.id.path}"
 
     val value = recipe.value()
-    val (base, addition) = when (value) {
-        is SmithingTransformRecipe -> value.base to value.addition
-        is SmithingTrimRecipe -> value.base to value.addition
+    val (template, base, addition) = when (value) {
+        is SmithingTransformRecipe -> Triple(value.template, value.base, value.addition)
+        is SmithingTrimRecipe -> Triple(value.template, value.base, value.addition)
         else -> return emptyList()
     }
 
-    val maxStacksSize = arrayOf(base, addition).maxOf { it.matchingStacks.size }
+    val maxStacksSize = arrayOf(template, base, addition).maxOf { it.matchingStacks.size }
 
     val recipeInfos = ArrayList<SmithingRecipeInfo>()
 
@@ -161,6 +161,7 @@ fun convertSmithingRecipe(recipe: RecipeEntry<SmithingRecipe>, registryLookup: R
             SmithingRecipeInfo(
                 recipePath,
                 if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
+                template.matchingStacks.getOrLast(index)!!,
                 base.matchingStacks.getOrLast(index)!!,
                 addition.matchingStacks.getOrLast(index)!!,
                 value.getResult(registryLookup)

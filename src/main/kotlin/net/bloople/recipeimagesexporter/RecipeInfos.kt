@@ -125,12 +125,13 @@ data class CampfireCookingRecipeInfo(
 data class SmithingRecipeInfo(
     override val recipeBasePath: String,
     override val recipePath: String,
+    val slotTemplate: ItemStack,
     val slotBase: ItemStack,
     val slotAddition: ItemStack,
     val output: ItemStack
 ) : RecipeInfo {
     override val itemStacks: List<ItemStack>
-        get() = listOf(slotBase, slotAddition, output).distinct()
+        get() = listOf(slotTemplate, slotBase, slotAddition, output).distinct()
 
     override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
         return SmithingRecipeImageGenerator(this, itemsData)
