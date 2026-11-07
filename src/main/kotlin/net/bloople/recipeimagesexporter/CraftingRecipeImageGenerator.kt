@@ -11,7 +11,7 @@ class CraftingRecipeImageGenerator(
     private val itemsData: ItemsData
 ) : RecipeImageGenerator {
     override val width = max(214 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
-    override val height = 122 + bottomImage.height + 6 + (recipeInfo.items.size * 30) + (max(recipeInfo.items.size - 1, 0) * 4)
+    override val height = 124 + bottomImage.height + 6 + (recipeInfo.items.size * 30) + (max(recipeInfo.items.size - 1, 0) * 4)
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
