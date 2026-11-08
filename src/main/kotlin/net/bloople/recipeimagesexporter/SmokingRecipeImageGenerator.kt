@@ -5,20 +5,19 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ItemStack
 import java.awt.image.BufferedImage
 import java.lang.Integer.max
-import javax.imageio.ImageIO
 
 
 class SmokingRecipeImageGenerator(
     private val recipeInfo: SmokingRecipeInfo,
     private val itemsData: ItemsData
 ) : RecipeImageGenerator {
-    override val width = max(178 + rightImage.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
-    override val height = baseImage.height
+    override val width = max(178 + RecipeImageGenerator.recipeRight.width, recipeInfo.items.maxOf { itemsData.itemNameWidths[it]!! } + 46 + 8)
+    override val height = smokingBase.height
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return  BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
-            raster.setRect(0, 0, baseImage.getData(0, 0, width, height))
-            raster.setRect(width - 2, 0, rightImage.getData(0, 0, 2, height))
+            raster.setRect(0, 0, smokingBase.getData(0, 0, width, height))
+            raster.setRect(width - 2, 0, RecipeImageGenerator.recipeRight.getData(0, 0, 2, height))
 
             createGraphics().use {
                 drawImage(itemsData.iconImage(recipeInfo.slot), 10, 10, null)
@@ -37,8 +36,6 @@ class SmokingRecipeImageGenerator(
     }
 
     companion object {
-        private const val smokingLeftImage = "iVBORw0KGgoAAAANSUhEUgAABAAAAADCBAMAAAAlXK0cAAAAAXNSR0IB2cksfwAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAABhQTFRFNzc3Pz8/W1tbi4uLm5ubxsbG29vb////2Wv9NAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+oLBxUoMh5rBV0AAAJcSURBVHja7dzbbYNAEEBRWqCFtDAdpIftIEoLbj+WeQiTADY/ETPn+iFkiZ/dI3aJFLpvla4zBNUBNFUOAAAEgAAQAKoKoFsXB2f1955/MJIA6LoAYtXtYP5f+EUAKCuA9lgB7p9+Ph7ew2GPAwBKDeBx0Z9e0/F02FsRADCw1QCMi8G4LAgAJb8N7Fff84UfAABU4zawLe/9xkNLAAAGtcQmUAAIAAEgAASAABAAAkAACAABIAAEgDID6LYKAwuACgCIjSwhAAgAAaBLAIjbOgAAAKAOgNMnAwAAAHUABAAAAFAZQAAAAAA5AcT2hX4BIAAAAIDKAAIAAABIuQmMxWcHQAAAAACVAQQAAACQcBMYo4KnGf5zdgEAAIDKAAIAAABIBmCY1ojV33stAQAAUATA/B3hNhAAACoCiFcANAAAACDnJnChYBNAAwAAAPIBaAsAbQdAAwAAAPICiAMADQAAAEi8CYz9TWADAAAAci4B504GAAAAAAAAAAAuDeDso14BAACAFAA8KBIAAAAAAAAAAHhjAn8/Yva9R80KAF0ZgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgADQfwII/9oFAACFAQgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAAtA3g60OV6z6NQel+AB3ruJUNHZMaAAAAAElFTkSuQmCC"
-        private val baseImage = ImageIO.read(decodeBase64(smokingLeftImage)).asARGB()
-        private val rightImage = ImageIO.read(decodeBase64(CraftingRecipeImageGenerator.craftingRightImage)).asARGB()
+        val smokingBase: BufferedImage by lazy { RecipeImageGenerator.loadTexture("smoking_base.png") }
     }
 }

@@ -10,9 +10,6 @@ import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.awt.image.Raster
-import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.util.*
 import kotlin.reflect.KClass
 
 fun <T> Array<out T>.getOrLast(index: Int): T? {
@@ -21,10 +18,6 @@ fun <T> Array<out T>.getOrLast(index: Int): T? {
 }
 
 val ItemStack.uniqueKey: String get() = "${BuiltInRegistries.ITEM.getKey(item)}:$count"
-
-fun decodeBase64(input: String): InputStream {
-    return ByteArrayInputStream(Base64.getDecoder().decode(input))
-}
 
 fun BufferedImage.asARGB(): BufferedImage {
     if(type == BufferedImage.TYPE_INT_ARGB) return this
