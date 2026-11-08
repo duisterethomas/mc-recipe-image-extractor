@@ -2,6 +2,7 @@ package net.bloople.recipeimagesexporter
 
 import net.minecraft.client.Minecraft
 import net.minecraft.Util
+import net.minecraft.world.item.Item
 import java.awt.image.BufferedImage
 import java.nio.file.Files
 import java.nio.file.Path
@@ -12,7 +13,7 @@ import javax.imageio.stream.FileImageOutputStream
 class RecipesExporter {
     private lateinit var exportDir: Path
 
-    fun export(client: Minecraft): CompletableFuture<Void> {
+    fun export(client: Minecraft, ingredientList: Boolean): CompletableFuture<Void> {
         client.sendMessage("Starting export of recipe images")
 
         val step1 = CompletableFuture.runAsync({
@@ -32,7 +33,6 @@ class RecipesExporter {
             client.sendMessage("Gathering icons and labels")
             recipeInfos = RecipeInfos(client.level!!.recipeManager)
             client.sendMessage("Gathered ${recipeInfos.all.size} recipes for export")
-            client.sendMessage("Generating icons and labels")
 
             itemIconsExtractor = ItemIconsExtractor(
                 recipeInfos.itemStacks,
@@ -40,27 +40,22 @@ class RecipesExporter {
             )
             itemIconsExtractor.exportIcons(client)
 
-            itemLabelsExtractor = ItemLabelsExtractor(recipeInfos.items, exportDir, client.font)
-            itemLabelsExtractor.exportLabels(client)
-
-            client.sendMessage("Generated icons and labels")
+            if (ingredientList) {
+                itemLabelsExtractor = ItemLabelsExtractor(recipeInfos.items, exportDir, client.font)
+                itemLabelsExtractor.exportLabels(client)
+            }
         }, client)
 
         val step3 = step2.thenRunAsync({
             itemIconsExtractor.importIcons()
-            itemLabelsExtractor.importLabels()
-
-            val itemsData = ItemsData(
-                itemIconsExtractor.icons,
-                itemLabelsExtractor.labels,
-                itemLabelsExtractor.widths
-            )
+            if (ingredientList) itemLabelsExtractor.importLabels()
 
             for (group in recipeInfos.groups) {
                 var count = 0
                 for (subGroupChunk in group.subGroups.chunked(100)) {
                     for (subGroup in subGroupChunk) {
-                        exportGroup(subGroup, itemsData)
+                        if (ingredientList) exportGroup(subGroup, itemIconsExtractor.icons, itemLabelsExtractor.labels, itemLabelsExtractor.widths)
+                        else exportGroup(subGroup, itemIconsExtractor.icons)
                         count += subGroup.size
                     }
                     client.sendMessage("Exported $count ${group.name} recipes")
@@ -73,11 +68,11 @@ class RecipesExporter {
         return step3
     }
 
-    private fun exportGroup(group: List<RecipeInfo>, itemsData: ItemsData) {
-        for(recipeInfo in group) writeRecipeImage(recipeInfo, recipeInfo.imageGenerator(itemsData).generate())
+    private fun exportGroup(group: List<RecipeInfo>, icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>? = null, itemNameWidths: Map<Item, Int>? = null) {
+        for(recipeInfo in group) writeRecipeImage(recipeInfo, recipeInfo.imageGenerator(icons, labels, itemNameWidths).generate())
 
         if(group.size == 1) return
-        val imageGenerators = group.map { it.imageGenerator(itemsData) }
+        val imageGenerators = group.map { it.imageGenerator(icons, labels, itemNameWidths) }
         val maxWidth = imageGenerators.maxOf { it.width }
         val maxHeight = imageGenerators.maxOf { it.height }
         val images = imageGenerators.map { it.generate(maxWidth, maxHeight) }

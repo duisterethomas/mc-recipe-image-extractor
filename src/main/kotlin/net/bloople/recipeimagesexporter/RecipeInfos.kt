@@ -6,6 +6,7 @@ import net.minecraft.world.item.crafting.RecipeManager
 import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import java.awt.image.BufferedImage
 
 interface RecipeInfo {
     val recipeBasePath: String
@@ -15,7 +16,7 @@ interface RecipeInfo {
         get() {
             return itemStacks.map { it.item }.distinct()
         }
-    fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator
+    fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>? = null, itemNameWidths: Map<Item, Int>? = null): RecipeImageGenerator
 }
 
 data class CraftingRecipeInfo(
@@ -48,8 +49,8 @@ data class CraftingRecipeInfo(
             ).filterNotNull().distinct()
         }
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return CraftingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return CraftingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 
@@ -62,8 +63,8 @@ data class StonecuttingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return StonecuttingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return StonecuttingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 
@@ -76,8 +77,8 @@ data class SmeltingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return SmeltingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return SmeltingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 
@@ -90,8 +91,8 @@ data class BlastingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return BlastingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return BlastingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 
@@ -104,8 +105,8 @@ data class SmokingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return SmokingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return SmokingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 
@@ -118,8 +119,8 @@ data class CampfireCookingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return CampfireCookingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return CampfireCookingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 
@@ -134,8 +135,8 @@ data class SmithingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slotTemplate, slotBase, slotAddition, output).distinct()
 
-    override fun imageGenerator(itemsData: ItemsData): RecipeImageGenerator {
-        return SmithingRecipeImageGenerator(this, itemsData)
+    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>?, itemNameWidths: Map<Item, Int>?): RecipeImageGenerator {
+        return SmithingRecipeImageGenerator(this, icons, labels, itemNameWidths)
     }
 }
 

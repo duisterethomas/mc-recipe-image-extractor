@@ -1,8 +1,12 @@
 package net.bloople.recipeimagesexporter
 
 import com.mojang.brigadier.CommandDispatcher
+import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.context.CommandContext
-import net.fabricmc.api.*
+import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
+import net.fabricmc.api.EnvironmentInterface
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
@@ -14,7 +18,6 @@ import java.util.concurrent.CompletionException
 
 const val MOD_ID = "recipeimagesexporter"
 
-@Suppress("UNUSED")
 @EnvironmentInterface(value=EnvType.CLIENT, itf=ClientModInitializer::class)
 object RecipeImagesExporterMod: ClientModInitializer {
     private var exportRunning = false
@@ -25,19 +28,26 @@ object RecipeImagesExporterMod: ClientModInitializer {
 
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback {
             dispatcher: CommandDispatcher<FabricClientCommandSource?>, _: CommandBuildContext? ->
-            dispatcher.register(
-                ClientCommandManager.literal("export-recipe-images").executes {
-                    context: CommandContext<FabricClientCommandSource> ->
-                    export(context.source.client)
-                    0
+            dispatcher.register(ClientCommandManager.literal("export-recipe-images")
+                // /export-recipe-images (no argument, uses the defaults)
+                .executes { context: CommandContext<FabricClientCommandSource> ->
+                    export(context.source.client, true)
+                    1
                 }
+                // /export-recipe-images true|false
+                .then(ClientCommandManager.argument("ingredientList", BoolArgumentType.bool())
+                    .executes { context: CommandContext<FabricClientCommandSource> ->
+                        export(context.source.client, BoolArgumentType.getBool(context, "ingredientList"))
+                        1
+                    }
+                )
             )
         })
 
         LOGGER.info("end onInitializeClient()")
     }
 
-    private fun export(client: Minecraft) {
+    private fun export(client: Minecraft, ingredientList: Boolean) {
         try {
             if(exportRunning) {
                 client.sendMessage("Please wait for the current export to complete before starting another one")
@@ -45,7 +55,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
             }
 
             exportRunning = true
-            RecipesExporter().export(client).thenRunAsync { exportRunning = false }.exceptionallyAsync { exception ->
+            RecipesExporter().export(client, ingredientList).thenRunAsync { exportRunning = false }.exceptionallyAsync { exception ->
                 handleException(client, if(exception is CompletionException) exception.cause else exception)
                 return@exceptionallyAsync null
             }
