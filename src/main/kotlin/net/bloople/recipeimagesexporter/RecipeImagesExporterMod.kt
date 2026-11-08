@@ -2,6 +2,7 @@ package net.bloople.recipeimagesexporter
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.api.EnvType
@@ -12,6 +13,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 import net.minecraft.client.Minecraft
 import net.minecraft.commands.CommandBuildContext
+import net.minecraft.commands.SharedSuggestionProvider
 import org.slf4j.Logger
 import java.util.concurrent.CompletionException
 
@@ -31,15 +33,33 @@ object RecipeImagesExporterMod: ClientModInitializer {
             dispatcher.register(ClientCommandManager.literal("export-recipe-images")
                 // /export-recipe-images (no argument, uses the defaults)
                 .executes { context: CommandContext<FabricClientCommandSource> ->
-                    export(context.source.client, true)
+                    export(context.source.client)
                     1
                 }
                 // /export-recipe-images true|false
                 .then(ClientCommandManager.argument("ingredientList", BoolArgumentType.bool())
                     .executes { context: CommandContext<FabricClientCommandSource> ->
-                        export(context.source.client, BoolArgumentType.getBool(context, "ingredientList"))
+                        export(
+                            context.source.client,
+                            BoolArgumentType.getBool(context, "ingredientList")
+                        )
                         1
                     }
+                    .then(ClientCommandManager.argument("namespace", StringArgumentType.word())
+                        .suggests { context, builder ->
+                            val namespaces = context.source.client.level?.recipeManager
+                                ?.recipes?.map { it.id.namespace }?.distinct()?.sorted() ?: emptyList()
+                            SharedSuggestionProvider.suggest(namespaces, builder)
+                        }
+                        .executes { context: CommandContext<FabricClientCommandSource> ->
+                            export(
+                                context.source.client,
+                                BoolArgumentType.getBool(context, "ingredientList"),
+                                StringArgumentType.getString(context, "namespace")
+                            )
+                            1
+                        }
+                    )
                 )
             )
         })
@@ -47,7 +67,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
         LOGGER.info("end onInitializeClient()")
     }
 
-    private fun export(client: Minecraft, ingredientList: Boolean) {
+    private fun export(client: Minecraft, ingredientList: Boolean = true, namespace: String? = null) {
         try {
             if(exportRunning) {
                 client.sendMessage("Please wait for the current export to complete before starting another one")
@@ -55,7 +75,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
             }
 
             exportRunning = true
-            RecipesExporter().export(client, ingredientList).thenRunAsync { exportRunning = false }.exceptionallyAsync { exception ->
+            RecipesExporter().export(client, ingredientList, namespace).thenRunAsync { exportRunning = false }.exceptionallyAsync { exception ->
                 handleException(client, if(exception is CompletionException) exception.cause else exception)
                 return@exceptionallyAsync null
             }

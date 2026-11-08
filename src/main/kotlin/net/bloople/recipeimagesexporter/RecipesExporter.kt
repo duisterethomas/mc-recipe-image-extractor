@@ -13,7 +13,7 @@ import javax.imageio.stream.FileImageOutputStream
 class RecipesExporter {
     private lateinit var exportDir: Path
 
-    fun export(client: Minecraft, ingredientList: Boolean): CompletableFuture<Void> {
+    fun export(client: Minecraft, ingredientList: Boolean, namespace: String?): CompletableFuture<Void> {
         client.sendMessage("Starting export of recipe images")
 
         val step1 = CompletableFuture.runAsync({
@@ -31,7 +31,7 @@ class RecipesExporter {
 
         val step2 = step1.thenRunAsync({
             client.sendMessage("Gathering icons and labels")
-            recipeInfos = RecipeInfos(client.level!!.recipeManager)
+            recipeInfos = RecipeInfos(client.level!!.recipeManager, namespace)
             client.sendMessage("Gathered ${recipeInfos.all.size} recipes for export")
 
             itemIconsExtractor = ItemIconsExtractor(

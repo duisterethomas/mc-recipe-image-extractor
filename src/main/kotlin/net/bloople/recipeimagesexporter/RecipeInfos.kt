@@ -6,6 +6,9 @@ import net.minecraft.world.item.crafting.RecipeManager
 import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.crafting.Recipe
+import net.minecraft.world.item.crafting.RecipeHolder
+import net.minecraft.world.item.crafting.RecipeInput
 import java.awt.image.BufferedImage
 
 interface RecipeInfo {
@@ -145,23 +148,21 @@ data class RecipeGroup(
     val subGroups: List<List<RecipeInfo>>
 )
 
-class RecipeInfos(recipeManager: RecipeManager) {
+class RecipeInfos(private val recipeManager: RecipeManager, private val namespace: String? = null) {
     val registryLookup = Minecraft.getInstance().level!!.registryAccess()
 
-    private val craftingGroups = recipeManager.getAllRecipesFor(RecipeType.CRAFTING)
-        .filterNot { it.value().isSpecial }.map { convertCraftingRecipe(it, registryLookup) }
-    private val smeltingGroups = recipeManager.getAllRecipesFor(RecipeType.SMELTING)
-        .filterNot { it.value().isSpecial }.map { convertSmeltingRecipe(it, registryLookup) }
-    private val blastingGroups = recipeManager.getAllRecipesFor(RecipeType.BLASTING)
-        .filterNot { it.value().isSpecial }.map { convertBlastingRecipe(it, registryLookup) }
-    private val smokingGroups = recipeManager.getAllRecipesFor(RecipeType.SMOKING)
-        .filterNot { it.value().isSpecial }.map { convertSmokingRecipe(it, registryLookup) }
-    private val campfireCookingGroups = recipeManager.getAllRecipesFor(RecipeType.CAMPFIRE_COOKING)
-        .filterNot { it.value().isSpecial }.map { convertCampfireCookingRecipe(it, registryLookup) }
-    private val stonecuttingGroups = recipeManager.getAllRecipesFor(RecipeType.STONECUTTING)
-        .filterNot { it.value().isSpecial }.map { convertStonecuttingRecipe(it, registryLookup) }
-    private val smithingGroups = recipeManager.getAllRecipesFor(RecipeType.SMITHING)
-        .filterNot { it.value().isSpecial }.map { convertSmithingRecipe(it, registryLookup) }
+    private fun <I : RecipeInput, T : Recipe<I>> recipesFor(type: RecipeType<T>): List<RecipeHolder<T>> =
+        recipeManager.getAllRecipesFor(type)
+            .filterNot { it.value().isSpecial }
+            .filter { namespace == null || it.id.namespace == namespace }
+
+    private val craftingGroups = recipesFor(RecipeType.CRAFTING).map { convertCraftingRecipe(it, registryLookup) }
+    private val smeltingGroups = recipesFor(RecipeType.SMELTING).map { convertSmeltingRecipe(it, registryLookup) }
+    private val blastingGroups = recipesFor(RecipeType.BLASTING).map { convertBlastingRecipe(it, registryLookup) }
+    private val smokingGroups = recipesFor(RecipeType.SMOKING).map { convertSmokingRecipe(it, registryLookup) }
+    private val campfireCookingGroups = recipesFor(RecipeType.CAMPFIRE_COOKING).map { convertCampfireCookingRecipe(it, registryLookup) }
+    private val stonecuttingGroups = recipesFor(RecipeType.STONECUTTING).map { convertStonecuttingRecipe(it, registryLookup) }
+    private val smithingGroups = recipesFor(RecipeType.SMITHING).map { convertSmithingRecipe(it, registryLookup) }
 
     val groups = listOf(
         RecipeGroup("Crafting", craftingGroups),
@@ -171,7 +172,7 @@ class RecipeInfos(recipeManager: RecipeManager) {
         RecipeGroup("Campfire Cooking", campfireCookingGroups),
         RecipeGroup("Stonecutting", stonecuttingGroups),
         RecipeGroup("Smithing", smithingGroups)
-    )
+    ).filter { it.subGroups.isNotEmpty() }
 
     val all = groups.flatMap { it.subGroups } .flatten()
 

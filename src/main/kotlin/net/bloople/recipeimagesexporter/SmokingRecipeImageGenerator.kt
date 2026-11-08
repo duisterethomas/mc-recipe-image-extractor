@@ -1,7 +1,5 @@
 package net.bloople.recipeimagesexporter
 
-import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import java.awt.image.BufferedImage
@@ -25,8 +23,6 @@ class SmokingRecipeImageGenerator(
 
             createGraphics().use {
                 drawImage(icons[recipeInfo.slot.uniqueKey]!!, 10, 10, null)
-                val coalStack = ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace("coal")), 1)
-                drawImage(icons[coalStack.uniqueKey]!!, 10, 82, null)
                 drawImage(icons[recipeInfo.output.uniqueKey]!!, 130, 46, null)
 
                 if (labels != null) {
