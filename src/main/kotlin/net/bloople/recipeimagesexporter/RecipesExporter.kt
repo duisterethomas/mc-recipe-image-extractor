@@ -56,11 +56,15 @@ class RecipesExporter {
                 itemLabelsExtractor.widths
             )
 
-            var count = 0
-            for(groupChunk in recipeInfos.groups.chunked(100)) {
-                for(group in groupChunk) exportGroup(group, itemsData)
-                count += groupChunk.size
-                client.sendMessage("Exported $count recipes")
+            for (group in recipeInfos.groups) {
+                var count = 0
+                for (subGroupChunk in group.subGroups.chunked(100)) {
+                    for (subGroup in subGroupChunk) {
+                        exportGroup(subGroup, itemsData)
+                        count += subGroup.size
+                    }
+                    client.sendMessage("Exported $count ${group.name} recipes")
+                }
             }
 
             client.sendMessage("Export complete")

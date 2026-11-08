@@ -12,7 +12,7 @@ class ItemLabelsExtractor(
     private val exportDir: Path,
     private val font: Font
 ) {
-    private val chunks = items.chunked(chunkSize).mapIndexed { index, itemStacks -> Chunk(itemStacks, index) }
+    private val chunks = items.chunked(100).mapIndexed { index, itemStacks -> Chunk(itemStacks, index) }
 
     lateinit var widths: Map<Item, Int>
     lateinit var labels: Map<Item, BufferedImage>
@@ -71,9 +71,5 @@ class ItemLabelsExtractor(
                 item to image
             }.toMap()
         }
-    }
-
-    companion object {
-        private const val chunkSize = 100
     }
 }

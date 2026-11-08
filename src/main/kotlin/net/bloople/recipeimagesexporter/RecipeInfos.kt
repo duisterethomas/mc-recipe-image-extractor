@@ -1,6 +1,7 @@
 package net.bloople.recipeimagesexporter
 
 import net.minecraft.client.Minecraft
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.item.crafting.RecipeManager
 import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.item.Item
@@ -138,6 +139,11 @@ data class SmithingRecipeInfo(
     }
 }
 
+data class RecipeGroup(
+    val name: String,
+    val subGroups: List<List<RecipeInfo>>
+)
+
 class RecipeInfos(recipeManager: RecipeManager) {
     val registryLookup = Minecraft.getInstance().level!!.registryAccess()
 
@@ -157,19 +163,22 @@ class RecipeInfos(recipeManager: RecipeManager) {
         .filterNot { it.value().isSpecial }.map { convertSmithingRecipe(it, registryLookup) }
 
     val groups = listOf(
-        craftingGroups,
-        smeltingGroups,
-        blastingGroups,
-        smokingGroups,
-        campfireCookingGroups,
-        stonecuttingGroups,
-        smithingGroups
-    ).flatten()
+        RecipeGroup("Crafting", craftingGroups),
+        RecipeGroup("Smelting", smeltingGroups),
+        RecipeGroup("Blasting", blastingGroups),
+        RecipeGroup("Smoking", smokingGroups),
+        RecipeGroup("Campfire Cooking", campfireCookingGroups),
+        RecipeGroup("Stonecutting", stonecuttingGroups),
+        RecipeGroup("Smithing", smithingGroups)
+    )
 
-    val all = groups.flatten()
+    val all = groups.flatMap { it.subGroups } .flatten()
 
-    val items = all.flatMap { it.items }.distinctBy { it.identifier }.sortedBy { it.identifier }
+    val items = all.flatMap { it.items }
+        .distinctBy { BuiltInRegistries.ITEM.getKey(it) }
+        .sortedBy { BuiltInRegistries.ITEM.getKey(it) }
 
-    val itemStacks = (all.flatMap { it.itemStacks } + items.map { ItemStack(it) }).distinctBy { it.uniqueKey }
+    val itemStacks = (all.flatMap { it.itemStacks } + items.map { ItemStack(it) })
+        .distinctBy { it.uniqueKey }
         .sortedBy { it.uniqueKey }
 }

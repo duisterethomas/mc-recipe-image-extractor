@@ -1,10 +1,8 @@
 package net.bloople.recipeimagesexporter
 
 import net.minecraft.client.Minecraft
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.core.registries.BuiltInRegistries
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,9 +20,7 @@ fun <T> Array<out T>.getOrLast(index: Int): T? {
     return if (index in 0..lastIndex) get(index) else get(lastIndex)
 }
 
-val Item.identifier: ResourceLocation get() = BuiltInRegistries.ITEM.getKey(this)
-
-val ItemStack.uniqueKey: String get() = "${item.identifier}:$count"
+val ItemStack.uniqueKey: String get() = "${BuiltInRegistries.ITEM.getKey(item)}:$count"
 
 fun decodeBase64(input: String): InputStream {
     return ByteArrayInputStream(Base64.getDecoder().decode(input))
@@ -52,15 +48,11 @@ inline fun <R> Graphics2D.use(block: Graphics2D.() -> R): R {
     }
 }
 
-fun Minecraft.sendMessage(message: Component) {
-    execute {
-        gui.chat.addMessage(message)
-        narrator.sayChat(message)
-    }
-}
-
 fun Minecraft.sendMessage(message: String) {
-    sendMessage(Component.literal(message))
+    execute {
+        gui.chat.addMessage(Component.literal(message))
+        narrator.sayChat(Component.literal(message))
+    }
 }
 
 fun getLogger(name: String): Logger {
