@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
@@ -9,7 +9,7 @@ interface RecipeImageGenerator {
     fun generate(imageWidth: Int = width, imageHeight: Int = height): BufferedImage
 
     companion object {
-        private const val TEXTURE_DIR = "/assets/recipeimagesexporter/textures/"
+        private const val TEXTURE_DIR = "/assets/$MOD_ID/textures/"
 
         fun loadTexture(name: String): BufferedImage {
             val path = TEXTURE_DIR + name

@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import java.awt.image.RenderedImage
 import java.io.Closeable

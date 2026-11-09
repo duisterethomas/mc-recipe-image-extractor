@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import com.mojang.brigadier.CommandDispatcher
 import com.mojang.brigadier.arguments.BoolArgumentType
@@ -18,10 +18,10 @@ import org.slf4j.Logger
 import java.util.concurrent.CompletionException
 
 
-const val MOD_ID = "recipeimagesexporter"
+const val MOD_ID = "recipeimageextractor"
 
 @EnvironmentInterface(value=EnvType.CLIENT, itf=ClientModInitializer::class)
-object RecipeImagesExporterMod: ClientModInitializer {
+object RecipeImageExtractor: ClientModInitializer {
     private var exportRunning = false
 
     @Environment(value=EnvType.CLIENT)
@@ -30,13 +30,13 @@ object RecipeImagesExporterMod: ClientModInitializer {
 
         ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback {
             dispatcher: CommandDispatcher<FabricClientCommandSource?>, _: CommandBuildContext? ->
-            dispatcher.register(ClientCommandManager.literal("export-recipe-images")
-                // /export-recipe-images (no argument, uses the defaults)
+            dispatcher.register(ClientCommandManager.literal("extract-recipe-images")
+                // /extract-recipe-images (no argument, uses the defaults)
                 .executes { context: CommandContext<FabricClientCommandSource> ->
                     export(context.source.client)
                     1
                 }
-                // /export-recipe-images true|false
+                // /extract-recipe-images true|false
                 .then(ClientCommandManager.argument("ingredientList", BoolArgumentType.bool())
                     .executes { context: CommandContext<FabricClientCommandSource> ->
                         export(
@@ -70,7 +70,7 @@ object RecipeImagesExporterMod: ClientModInitializer {
     private fun export(client: Minecraft, ingredientList: Boolean = true, namespace: String? = null) {
         try {
             if(exportRunning) {
-                client.sendMessage("Please wait for the current export to complete before starting another one")
+                client.sendMessage("Please wait for the current extraction to complete before starting another one")
                 return
             }
 
@@ -86,9 +86,9 @@ object RecipeImagesExporterMod: ClientModInitializer {
     }
 
     private fun handleException(client: Minecraft, throwable: Throwable?) {
-        LOGGER.error("Caught exception during export", throwable)
+        LOGGER.error("Caught exception during extraction", throwable)
         exportRunning = false
-        client.sendMessage("Export failed due to an error, see log for details")
+        client.sendMessage("Extraction failed due to an error, see log for details")
     }
 
     val LOGGER: Logger = getLogger(this::class)

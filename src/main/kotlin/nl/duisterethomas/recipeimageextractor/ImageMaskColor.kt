@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import java.awt.Color
 import java.awt.image.BufferedImage

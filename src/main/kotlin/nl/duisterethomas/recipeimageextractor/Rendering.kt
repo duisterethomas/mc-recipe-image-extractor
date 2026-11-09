@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import com.mojang.blaze3d.platform.GlConst
 import com.mojang.blaze3d.platform.Lighting
@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.Screenshot
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix4f
 import org.joml.Matrix4fStack
 
@@ -65,7 +64,6 @@ fun renderToTexture(
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShader(GameRenderer::getPositionTexShader)
-        RenderSystem.setShaderTexture(0, ResourceLocation.withDefaultNamespace("textures/gui/widgets.png"))
 
         RenderSystem.enableBlend()
         RenderSystem.defaultBlendFunc()

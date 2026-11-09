@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -6,8 +6,8 @@ import java.awt.image.BufferedImage
 import java.lang.Integer.max
 
 
-class SmeltingRecipeImageGenerator(
-    private val recipeInfo: SmeltingRecipeInfo,
+class BlastingRecipeImageGenerator(
+    private val recipeInfo: BlastingRecipeInfo,
     private val icons: Map<String, BufferedImage>,
     private val labels: Map<Item, BufferedImage>?,
     private val itemNameWidths: Map<Item, Int>?
@@ -17,7 +17,7 @@ class SmeltingRecipeImageGenerator(
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
-            raster.setRect(0, 0, smeltingBase.getData(0, 0, width, height))
+            raster.setRect(0, 0, blastingBase.getData(0, 0, width, height))
             raster.setRect(0, height - 2, RecipeImageGenerator.recipeBottom.getData(0, 0, width, 2))
             raster.setRect(width - 2, 0, RecipeImageGenerator.recipeRight.getData(0, 0, 2, height))
 
@@ -38,6 +38,6 @@ class SmeltingRecipeImageGenerator(
     }
 
     companion object {
-        val smeltingBase: BufferedImage by lazy { RecipeImageGenerator.loadTexture("smelting_base.png") }
+        val blastingBase: BufferedImage by lazy { RecipeImageGenerator.loadTexture("blasting_base.png") }
     }
 }

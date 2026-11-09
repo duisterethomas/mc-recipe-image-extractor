@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.client.Minecraft
 import net.minecraft.Util
@@ -14,15 +14,15 @@ class RecipesExporter {
     private lateinit var exportDir: Path
 
     fun export(client: Minecraft, ingredientList: Boolean, namespace: String?): CompletableFuture<Void> {
-        client.sendMessage("Starting export of recipe images")
+        client.sendMessage("Starting extraction of recipe images")
 
         val step1 = CompletableFuture.runAsync({
-            client.sendMessage("Deleting any existing export")
-            exportDir = client.gameDirectory.toPath().toAbsolutePath().resolve("recipe-images-exporter")
+            client.sendMessage("Deleting any existing extracted recipe images")
+            exportDir = client.gameDirectory.toPath().toAbsolutePath().resolve(MOD_ID)
             exportDir.toFile().deleteRecursively()
             Files.createDirectories(exportDir)
 
-            client.sendMessage("Deleted any existing export and created export directory $exportDir")
+            client.sendMessage("Deleted any existing extracted recipe images and created output directory $exportDir")
         }, Util.ioPool())
 
         lateinit var recipeInfos: RecipeInfos
@@ -32,7 +32,7 @@ class RecipesExporter {
         val step2 = step1.thenRunAsync({
             client.sendMessage("Gathering icons and labels")
             recipeInfos = RecipeInfos(client.level!!.recipeManager, namespace)
-            client.sendMessage("Gathered ${recipeInfos.all.size} recipes for export")
+            client.sendMessage("Gathered ${recipeInfos.all.size} recipes for extraction")
 
             itemIconsExtractor = ItemIconsExtractor(
                 recipeInfos.itemStacks,
@@ -58,11 +58,11 @@ class RecipesExporter {
                         else exportGroup(subGroup, itemIconsExtractor.icons)
                         count += subGroup.size
                     }
-                    client.sendMessage("Exported $count ${group.name} recipes")
+                    client.sendMessage("Extracted $count ${group.name} recipes")
                 }
             }
 
-            client.sendMessage("Export complete")
+            client.sendMessage("Extraction complete")
         }, Util.ioPool())
 
         return step3

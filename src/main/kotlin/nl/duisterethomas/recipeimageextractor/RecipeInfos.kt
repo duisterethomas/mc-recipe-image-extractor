@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.client.Minecraft
 import net.minecraft.core.registries.BuiltInRegistries

@@ -1,34 +1,38 @@
 {
-  "schemaVersion": 1,
-  "id": "recipeimagesexporter",
-  "version": "${version}",
-  "name": "Recipe Images Exporter",
-  "description": "Recipe Images Exporter",
-  "authors": [
-    "Brenton \"B-Train\" Fletcher"
-  ],
-  "contact": {
-    "homepage": "https://github.com/bloopletech/recipe-images-exporter",
-    "sources": "https://github.com/bloopletech/recipe-images-exporter"
-  },
-  "license": "MIT",
-  "icon": "assets/recipeimagesexporter/icon.png",
-  "environment": "client",
-  "entrypoints": {
-    "client": [
-      {
-        "adapter": "kotlin",
-        "value": "net.bloople.recipeimagesexporter.RecipeImagesExporterMod"
-      }
-    ]
-  },
-  "accessWidener": "recipeimagesexporter.accesswidener",
-  "depends": {
-    "fabric-key-binding-api-v1": "*",
-    "fabricloader": ">=0.20.1",
-    "minecraft": "~1.21",
-    "java": ">=21",
-    "fabric-api": "*",
-    "fabric-language-kotlin": "*"
-  }
+    "schemaVersion": 1,
+    "id": "recipeimageextractor",
+    "version": "${version}",
+    "name": "Recipe Image Extractor",
+    "description": "Export Recipes as PNG images",
+    "authors": [
+        {
+            "name": "Duisterethomas",
+            "homepage": "https://duisterethomas.nl/"
+        },
+        "Brenton \"B-Train\" Fletcher"
+    ],
+    "contact": {
+		"homepage": "https://modrinth.com/project/recipeimageextractor",
+		"issues": "https://github.com/duisterethomas/mc-recipe-image-extractor/issues",
+		"sources": "https://github.com/duisterethomas/mc-recipe-image-extractor"
+    },
+    "license": "MIT",
+    "icon": "assets/recipeimageextractor/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            {
+                "adapter": "kotlin",
+                "value": "nl.duisterethomas.recipeimageextractor.RecipeImageExtractor"
+            }
+        ]
+    },
+    "accessWidener": "recipeimageextractor.accesswidener",
+    "depends": {
+        "fabricloader": ">=0.20.1",
+        "minecraft": "~1.21",
+        "java": ">=21",
+        "fabric-api": "*",
+        "fabric-language-kotlin": "*"
+    }
 }

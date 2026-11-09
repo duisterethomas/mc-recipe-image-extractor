@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.client.Minecraft
 import net.minecraft.world.item.ItemStack
@@ -56,7 +56,7 @@ fun getLogger(clazz: KClass<*>): Logger {
     val fullName = if(clazz.isCompanion) clazz.java.declaringClass.name
     else clazz.qualifiedName
 
-    val name = fullName!!.removePrefix("net.bloople.recipeimagesexporter.")
+    val name = fullName!!.removePrefix("nl.duisterethomas.recipeimageextractor.")
 
     return getLogger(name)
 }

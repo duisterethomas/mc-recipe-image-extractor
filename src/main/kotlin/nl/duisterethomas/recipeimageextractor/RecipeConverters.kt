@@ -1,4 +1,4 @@
-package net.bloople.recipeimagesexporter
+package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.core.HolderLookup
 import net.minecraft.recipebook.PlaceRecipe
