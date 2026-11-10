@@ -13,7 +13,7 @@ class SmithingRecipeImageGenerator(
     private val itemNameWidths: Map<Item, Int>?
 ) : RecipeImageGenerator {
     override val width = max(230 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
-    override val height = if (labels != null) 190 else 52
+    override val height = if (labels != null) 192 else 52
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {

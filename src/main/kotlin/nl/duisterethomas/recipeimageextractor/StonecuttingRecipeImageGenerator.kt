@@ -13,7 +13,7 @@ class StonecuttingRecipeImageGenerator(
     private val itemNameWidths: Map<Item, Int>?
 ) : RecipeImageGenerator {
     override val width = max(168 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
-    override val height = if (labels != null) 166 else 96
+    override val height = if (labels != null) 160 else 88
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
@@ -22,12 +22,12 @@ class StonecuttingRecipeImageGenerator(
             raster.setRect(width - 2, 0, RecipeImageGenerator.recipeRight.getData(0, 0, 2, height))
 
             createGraphics().use {
-                drawImage(icons[recipeInfo.slot.uniqueKey]!!, 10, 46, null)
-                drawImage(icons[recipeInfo.output.uniqueKey]!!, 53, 21, null)
-                drawImage(icons[recipeInfo.output.uniqueKey]!!, 120, 46, null)
+                drawImage(icons[recipeInfo.slot.uniqueKey]!!, 10, 38, null)
+                drawImage(icons[recipeInfo.output.uniqueKey]!!, 53, 12, null)
+                drawImage(icons[recipeInfo.output.uniqueKey]!!, 120, 38, null)
 
                 if (labels != null) {
-                    var y = 94
+                    var y = 86
                     for (item in recipeInfo.items) {
                         drawImage(icons[ItemStack(item, 1).uniqueKey]!!, 8, y, null)
                         drawImage(labels[item]!!, 46, y + 8, null)

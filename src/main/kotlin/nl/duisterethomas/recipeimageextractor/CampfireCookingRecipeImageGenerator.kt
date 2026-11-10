@@ -12,8 +12,8 @@ class CampfireCookingRecipeImageGenerator(
     private val labels: Map<Item, BufferedImage>?,
     private val itemNameWidths: Map<Item, Int>?
 ) : RecipeImageGenerator {
-    override val width = max(166 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
-    override val height = if (labels != null) 122 else 52
+    override val width = max(178 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
+    override val height = if (labels != null) 156 else 84
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
@@ -23,10 +23,10 @@ class CampfireCookingRecipeImageGenerator(
 
             createGraphics().use {
                 drawImage(icons[recipeInfo.slot.uniqueKey]!!, 10, 10, null)
-                drawImage(icons[recipeInfo.output.uniqueKey]!!, 126, 10, null)
+                drawImage(icons[recipeInfo.output.uniqueKey]!!, 130, 24, null)
 
                 if (labels != null) {
-                    var y = 50
+                    var y = 82
                     for (item in recipeInfo.items) {
                         drawImage(icons[ItemStack(item, 1).uniqueKey]!!, 8, y, null)
                         drawImage(labels[item]!!, 46, y + 8, null)

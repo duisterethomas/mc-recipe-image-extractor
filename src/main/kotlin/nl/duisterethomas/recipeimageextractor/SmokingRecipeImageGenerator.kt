@@ -13,7 +13,7 @@ class SmokingRecipeImageGenerator(
     private val itemNameWidths: Map<Item, Int>?
 ) : RecipeImageGenerator {
     override val width = max(178 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
-    override val height = if (labels != null) 194 else 124
+    override val height = if (labels != null) 196 else 124
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return  BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
