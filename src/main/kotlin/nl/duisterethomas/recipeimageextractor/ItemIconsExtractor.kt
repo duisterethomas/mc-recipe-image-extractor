@@ -3,7 +3,6 @@ package nl.duisterethomas.recipeimageextractor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.world.item.ItemStack
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.nio.file.Path
 import javax.imageio.ImageIO
@@ -21,16 +20,13 @@ class ItemIconsExtractor(
         client.sendMessage("Generating icons")
         var iconsCount = 0
         for(chunk in chunks) {
-            chunk.exportIcons(Color(139, 139, 139))
-            chunk.findMaskColor()
-            chunk.exportIcons(chunk.maskColor)
+            chunk.exportIcons()
             iconsCount += chunk.size
             client.sendMessage("Generated $iconsCount icons")
         }
     }
 
     fun importIcons() {
-        for(chunk in chunks) chunk.eraseMaskColor()
         icons = HashMap<String, BufferedImage>().also {
             for(chunk in chunks) it += chunk.importIcons()
         }
@@ -40,19 +36,15 @@ class ItemIconsExtractor(
         private val iconsPath = exportDir.resolve("icons_$index.png")
         private val iconsStride = ceil(sqrt(itemStacks.size.toDouble())).toInt()
         val size = itemStacks.size
-        lateinit var maskColor: Color
 
-        fun exportIcons(background: Color) {
+        fun exportIcons() {
             val width = iconsStride * 34
             val height = iconsStride * 34
             val scaledWidth = iconsStride * 17
-            val r = background.red / 255.0f
-            val g = background.green / 255.0f
-            val b = background.blue / 255.0f
 
             val client = Minecraft.getInstance()
 
-            val nativeImage = renderToTexture(width, height, r, g, b, 2.0) {
+            val nativeImage = renderToTexture(width, height, 2.0) {
                 val context = GuiGraphics(client, client.renderBuffers().bufferSource())
 
                 var x = 0
@@ -71,20 +63,7 @@ class ItemIconsExtractor(
                 context.flush()
             }
 
-            nativeImage.use { it.writeToFile(iconsPath.toFile()) }
-        }
-
-        private fun getImage(): BufferedImage {
-            return ImageIO.read(iconsPath.toFile()).asARGB()
-        }
-
-        fun findMaskColor() {
-            maskColor = findMaskColor(getImage())
-        }
-
-        fun eraseMaskColor() {
-            val maskedImage = getImage().apply { applyMaskColor(maskColor, this) }
-            ImageIO.write(maskedImage, "PNG", iconsPath.toFile())
+            nativeImage.use { ImageIO.write(it.toStraightAlpha(), "PNG", iconsPath.toFile()) }
         }
 
         fun importIcons(): Map<String, BufferedImage> {

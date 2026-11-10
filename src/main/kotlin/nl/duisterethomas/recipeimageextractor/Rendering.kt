@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.FogRenderer
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.Screenshot
 import net.minecraft.network.chat.Component
 import org.joml.Matrix4f
 import org.joml.Matrix4fStack
@@ -23,16 +22,13 @@ import org.joml.Matrix4fStack
 fun renderToTexture(
     width: Int,
     height: Int,
-    r: Float,
-    g: Float,
-    b: Float,
     scaleFactor: Double,
     block: () -> Unit
 ): NativeImage {
     RenderSystem.assertOnRenderThread()
 
     val textureTarget = TextureTarget(width, height, true, ON_OSX)
-    textureTarget.setClearColor(r, g, b, 0.0f)
+    textureTarget.setClearColor(0.0f, 0.0f, 0.0f, 0.0f)
     textureTarget.resize(width, height, ON_OSX)
 
     try {
@@ -82,7 +78,14 @@ fun renderToTexture(
         matrixStack.popMatrix()
         RenderSystem.applyModelViewMatrix()
 
-        return Screenshot.takeScreenshot(textureTarget)
+        textureTarget.unbindWrite()
+
+        val image = NativeImage(width, height, false)
+        RenderSystem.bindTexture(textureTarget.colorTextureId)
+        image.downloadTexture(0, false)
+        image.flipY()
+
+        return image
     }
     finally {
         textureTarget.destroyBuffers()

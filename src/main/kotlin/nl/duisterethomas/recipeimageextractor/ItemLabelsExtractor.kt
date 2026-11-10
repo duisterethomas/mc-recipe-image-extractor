@@ -46,7 +46,7 @@ class ItemLabelsExtractor(
             val width = widths.values.max()
             val height = items.size * 18
 
-            val nativeImage = renderToTexture(width, height, 0.7765f, 0.7765f, 0.7765f, 2.0) {
+            val nativeImage = renderToTexture(width, height, 2.0) {
                 var y = 0
                 for(item in items) {
                     renderText(font, item.description, 0, y, 0x000000)
@@ -54,7 +54,7 @@ class ItemLabelsExtractor(
                 }
             }
 
-            nativeImage.use { it.writeToFile(labelsPath.toFile()) }
+            nativeImage.use { ImageIO.write(it.toStraightAlpha(), "PNG", labelsPath.toFile()) }
         }
 
         fun importLabels(): Map<Item, BufferedImage> {
