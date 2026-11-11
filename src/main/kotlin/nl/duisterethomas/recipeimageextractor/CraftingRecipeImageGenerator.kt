@@ -1,7 +1,6 @@
 package nl.duisterethomas.recipeimageextractor
 
-import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
+import net.minecraft.network.chat.Component
 import java.awt.image.BufferedImage
 import java.lang.Integer.max
 
@@ -9,11 +8,13 @@ import java.lang.Integer.max
 class CraftingRecipeImageGenerator(
     private val recipeInfo: CraftingRecipeInfo,
     private val icons: Map<String, BufferedImage>,
-    private val labels: Map<Item, BufferedImage>?,
-    private val itemNameWidths: Map<Item, Int>?
+    private val labels: Map<Component, BufferedImage>?,
+    private val labelWidths: Map<Component, Int>?
 ) : RecipeImageGenerator {
-    override val width = max(214 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
-    override val height = 122 + RecipeImageGenerator.recipeBottom.height + (if (labels != null) 8 + (recipeInfo.items.size * 30) + (max(recipeInfo.items.size - 1, 0) * 4) else 0)
+    val distinctItemStacks = recipeInfo.itemStacks.distinctBy { it.uniqueKey }
+
+    override val width = max(214 + RecipeImageGenerator.recipeRight.width, if (labelWidths != null) recipeInfo.itemStacks.maxOf { labelWidths[it.item.description]!! } + 46 + 8 else 0)
+    override val height = 122 + RecipeImageGenerator.recipeBottom.height + (if (labels != null) 8 + (distinctItemStacks.size * 30) + (max(distinctItemStacks.size - 1, 0) * 4) else 0)
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
         return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
@@ -35,9 +36,9 @@ class CraftingRecipeImageGenerator(
 
                 if (labels != null) {
                     var y = 122
-                    for (item in recipeInfo.items) {
-                        drawImage(icons[ItemStack(item, 1).uniqueKey]!!, 8, y, null)
-                        drawImage(labels[item]!!, 46, y + 8, null)
+                    for (itemStack in distinctItemStacks) {
+                        drawImage(icons[itemStack.copyWithCount(1).uniqueKey]!!, 8, y, null)
+                        drawImage(labels[itemStack.item.description]!!, 46, y + 8, null)
                         y += 34
                     }
                 }

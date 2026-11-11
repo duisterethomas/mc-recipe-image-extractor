@@ -2,7 +2,7 @@ package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.client.Minecraft
 import net.minecraft.Util
-import net.minecraft.world.item.Item
+import net.minecraft.network.chat.Component
 import java.awt.image.BufferedImage
 import java.nio.file.Files
 import java.nio.file.Path
@@ -41,7 +41,7 @@ class RecipesExporter {
             itemIconsExtractor.exportIcons(client)
 
             if (ingredientList) {
-                itemLabelsExtractor = ItemLabelsExtractor(recipeInfos.items, exportDir, client.font)
+                itemLabelsExtractor = ItemLabelsExtractor(recipeInfos.itemStacks, exportDir, client.font)
                 itemLabelsExtractor.exportLabels(client)
             }
         }, client)
@@ -68,11 +68,11 @@ class RecipesExporter {
         return step3
     }
 
-    private fun exportGroup(group: List<RecipeInfo>, icons: Map<String, BufferedImage>, labels: Map<Item, BufferedImage>? = null, itemNameWidths: Map<Item, Int>? = null) {
-        for(recipeInfo in group) writeRecipeImage(recipeInfo, recipeInfo.imageGenerator(icons, labels, itemNameWidths).generate())
+    private fun exportGroup(group: List<RecipeInfo>, icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>? = null, labelWidths: Map<Component, Int>? = null) {
+        for(recipeInfo in group) writeRecipeImage(recipeInfo, recipeInfo.imageGenerator(icons, labels, labelWidths).generate())
 
         if(group.size == 1) return
-        val imageGenerators = group.map { it.imageGenerator(icons, labels, itemNameWidths) }
+        val imageGenerators = group.map { it.imageGenerator(icons, labels, labelWidths) }
         val maxWidth = imageGenerators.maxOf { it.width }
         val maxHeight = imageGenerators.maxOf { it.height }
         val images = imageGenerators.map { it.generate(maxWidth, maxHeight) }

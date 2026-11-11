@@ -1,7 +1,6 @@
 package nl.duisterethomas.recipeimageextractor
 
-import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
+import net.minecraft.network.chat.Component
 import java.awt.image.BufferedImage
 import java.lang.Integer.max
 
@@ -9,10 +8,10 @@ import java.lang.Integer.max
 class SmeltingRecipeImageGenerator(
     private val recipeInfo: SmeltingRecipeInfo,
     private val icons: Map<String, BufferedImage>,
-    private val labels: Map<Item, BufferedImage>?,
-    private val itemNameWidths: Map<Item, Int>?
+    private val labels: Map<Component, BufferedImage>?,
+    private val labelWidths: Map<Component, Int>?
 ) : RecipeImageGenerator {
-    override val width = max(178 + RecipeImageGenerator.recipeRight.width, if (itemNameWidths != null) recipeInfo.items.maxOf { itemNameWidths[it]!! } + 46 + 8 else 0)
+    override val width = max(178 + RecipeImageGenerator.recipeRight.width, if (labelWidths != null) recipeInfo.itemStacks.maxOf { labelWidths[it.item.description]!! } + 46 + 8 else 0)
     override val height = if (labels != null) 196 else 124
 
     override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
@@ -27,9 +26,9 @@ class SmeltingRecipeImageGenerator(
 
                 if (labels != null) {
                     var y = 122
-                    for (item in recipeInfo.items) {
-                        drawImage(icons[ItemStack(item, 1).uniqueKey]!!, 8, y, null)
-                        drawImage(labels[item]!!, 46, y + 8, null)
+                    for (itemStack in recipeInfo.itemStacks.distinctBy { it.uniqueKey }) {
+                        drawImage(icons[itemStack.copyWithCount(1).uniqueKey]!!, 8, y, null)
+                        drawImage(labels[itemStack.item.description]!!, 46, y + 8, null)
                         y += 34
                     }
                 }
