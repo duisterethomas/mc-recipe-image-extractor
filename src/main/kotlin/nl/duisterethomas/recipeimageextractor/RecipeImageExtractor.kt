@@ -15,6 +15,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.commands.CommandBuildContext
 import net.minecraft.commands.SharedSuggestionProvider
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletionException
 
 
@@ -91,5 +92,5 @@ object RecipeImageExtractor: ClientModInitializer {
         client.sendMessage("Extraction failed due to an error, see log for details")
     }
 
-    val LOGGER: Logger = getLogger(this::class)
+    val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
 }

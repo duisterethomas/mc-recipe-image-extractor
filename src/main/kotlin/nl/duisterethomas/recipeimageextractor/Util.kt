@@ -7,13 +7,10 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.armortrim.ArmorTrim
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.awt.AlphaComposite
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.awt.image.Raster
-import kotlin.reflect.KClass
 
 fun <T> Array<out T>.getOrLast(index: Int): T? {
     if(isEmpty()) return null
@@ -67,17 +64,4 @@ fun Minecraft.sendMessage(message: String) {
         gui.chat.addMessage(Component.literal(message))
         narrator.sayChat(Component.literal(message))
     }
-}
-
-fun getLogger(name: String): Logger {
-    return LoggerFactory.getLogger("$MOD_ID/$name")
-}
-
-fun getLogger(clazz: KClass<*>): Logger {
-    val fullName = if(clazz.isCompanion) clazz.java.declaringClass.name
-    else clazz.qualifiedName
-
-    val name = fullName!!.removePrefix("nl.duisterethomas.recipeimageextractor.")
-
-    return getLogger(name)
 }
