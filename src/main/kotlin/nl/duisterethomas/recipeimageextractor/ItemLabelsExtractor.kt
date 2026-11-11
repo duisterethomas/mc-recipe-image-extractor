@@ -22,7 +22,7 @@ class ItemLabelsExtractor(
         client.sendMessage("Generating labels")
         var labelsCount = 0
         for(chunk in chunks) {
-            chunk.exportLabels()
+            chunk.exportLabels(client)
             labelsCount += chunk.size
             client.sendMessage("Generated $labelsCount labels")
         }
@@ -43,14 +43,14 @@ class ItemLabelsExtractor(
         val size = itemStacks.size
         val widths by lazy { itemStacks.associate { it.item.description to font.width(it.item.description) * 2 } }
 
-        fun exportLabels() {
+        fun exportLabels(client: Minecraft) {
             val width = widths.values.max()
             val height = itemStacks.size * 18
 
-            val nativeImage = renderToTexture(width, height, 2.0) {
+            val nativeImage = renderToTexture(client, width, height, 2.0) { graphics ->
                 var y = 0
                 for(itemStack in itemStacks) {
-                    renderText(font, itemStack.item.description, 0, y, 0x000000)
+                    graphics.drawString(font, itemStack.item.description, 0, y, 0xFF000000.toInt(), false)
                     y += 9
                 }
             }

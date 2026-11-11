@@ -1,7 +1,6 @@
 package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.world.item.ItemStack
 import java.awt.image.BufferedImage
 import java.nio.file.Path
@@ -20,7 +19,7 @@ class ItemIconsExtractor(
         client.sendMessage("Generating icons")
         var iconsCount = 0
         for(chunk in chunks) {
-            chunk.exportIcons()
+            chunk.exportIcons(client)
             iconsCount += chunk.size
             client.sendMessage("Generated $iconsCount icons")
         }
@@ -37,21 +36,17 @@ class ItemIconsExtractor(
         private val iconsStride = ceil(sqrt(itemStacks.size.toDouble())).toInt()
         val size = itemStacks.size
 
-        fun exportIcons() {
+        fun exportIcons(client: Minecraft) {
             val width = iconsStride * 34
             val height = iconsStride * 34
             val scaledWidth = iconsStride * 17
 
-            val client = Minecraft.getInstance()
-
-            val nativeImage = renderToTexture(width, height, 2.0) {
-                val context = GuiGraphics(client, client.renderBuffers().bufferSource())
-
+            val nativeImage = renderToTexture(client, width, height, 2.0) { graphics ->
                 var x = 0
                 var y = 0
                 for(itemStack in itemStacks) {
-                    context.renderItem(itemStack, x, y)
-                    context.renderItemDecorations(client.font, itemStack, x, y)
+                    graphics.renderItem(itemStack, x, y)
+                    graphics.renderItemDecorations(client.font, itemStack, x, y)
 
                     x += 17
                     if(x >= scaledWidth) {
@@ -59,8 +54,6 @@ class ItemIconsExtractor(
                         y += 17
                     }
                 }
-
-                context.flush()
             }
 
             nativeImage.use { ImageIO.write(it.toStraightAlpha(), "PNG", iconsPath.toFile()) }

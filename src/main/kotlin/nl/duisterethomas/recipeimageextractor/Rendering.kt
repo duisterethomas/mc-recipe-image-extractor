@@ -5,25 +5,22 @@ import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.ByteBufferBuilder
-import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexSorting
-import net.minecraft.client.gui.Font
+import net.minecraft.client.Minecraft
 import net.minecraft.client.Minecraft.ON_OSX
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.FogRenderer
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.network.chat.Component
 import org.joml.Matrix4f
 import org.joml.Matrix4fStack
 
 
 fun renderToTexture(
+    client: Minecraft,
     width: Int,
     height: Int,
     scaleFactor: Double,
-    block: () -> Unit
+    block: (GuiGraphics) -> Unit
 ): NativeImage {
     RenderSystem.assertOnRenderThread()
 
@@ -64,7 +61,9 @@ fun renderToTexture(
         RenderSystem.enableBlend()
         RenderSystem.defaultBlendFunc()
 
-        block()
+        val graphics = GuiGraphics(client, client.renderBuffers().bufferSource())
+        block(graphics)
+        graphics.flush()
 
         RenderSystem.disableBlend()
 
@@ -90,25 +89,4 @@ fun renderToTexture(
     finally {
         textureTarget.destroyBuffers()
     }
-}
-
-fun renderText(font: Font, component: Component, x: Int, y: Int, color: Int) {
-    val poseStack = PoseStack()
-
-    val immediate = MultiBufferSource.immediate(ByteBufferBuilder(256))
-
-    font.drawInBatch(
-        component,
-        x.toFloat(),
-        y.toFloat(),
-        color,
-        false,
-        poseStack.last().pose(),
-        immediate,
-        Font.DisplayMode.NORMAL,
-        0,
-        LightTexture.FULL_BRIGHT
-    )
-
-    immediate.endBatch()
 }
