@@ -10,7 +10,6 @@ import net.minecraft.world.item.armortrim.ArmorTrim
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.AlphaComposite
-import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.awt.image.Raster
@@ -61,15 +60,6 @@ fun NativeImage.toStraightAlpha(): BufferedImage {
     graphics.drawImage(premultiplied, 0, 0, null)
     graphics.dispose()
     return straight
-}
-
-inline fun <R> Graphics2D.use(block: Graphics2D.() -> R): R {
-    try {
-        return block(this)
-    }
-    finally {
-        dispose()
-    }
 }
 
 fun Minecraft.sendMessage(message: String) {

@@ -1,43 +1,29 @@
 package nl.duisterethomas.recipeimageextractor
 
 import net.minecraft.network.chat.Component
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
-import java.lang.Integer.max
 
 
 class StonecuttingRecipeImageGenerator(
-    private val recipeInfo: StonecuttingRecipeInfo,
-    private val icons: Map<ItemStackKey, BufferedImage>,
-    private val labels: Map<Component, BufferedImage>?,
-    private val labelWidths: Map<Component, Int>?
-) : RecipeImageGenerator {
-    override val width = max(168 + RecipeImageGenerator.recipeRight.width, if (labelWidths != null) recipeInfo.itemStacks.maxOf { labelWidths[it.item.description]!! } + 46 + 8 else 0)
-    override val height = if (labels != null) 160 else 88
-
-    override fun generate(imageWidth: Int, imageHeight: Int): BufferedImage {
-        return BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB).apply {
-            raster.setRect(0, 0, stonecuttingBase.getData(0, 0, width, height))
-            raster.setRect(0, height - 2, RecipeImageGenerator.recipeBottom.getData(0, 0, width, 2))
-            raster.setRect(width - 2, 0, RecipeImageGenerator.recipeRight.getData(0, 0, 2, height))
-
-            createGraphics().use {
-                drawImage(icons[recipeInfo.slot.uniqueKey]!!, 10, 38, null)
-                drawImage(icons[recipeInfo.output.uniqueKey]!!, 53, 12, null)
-                drawImage(icons[recipeInfo.output.uniqueKey]!!, 120, 38, null)
-
-                if (labels != null) {
-                    var y = 86
-                    for (itemStack in recipeInfo.itemStacks.distinctBy { it.uniqueKey }) {
-                        drawImage(icons[itemStack.copyWithCount(1).uniqueKey]!!, 8, y, null)
-                        drawImage(labels[itemStack.item.description]!!, 46, y + 8, null)
-                        y += 34
-                    }
-                }
-            }
-        }
+    recipeInfo: StonecuttingRecipeInfo,
+    icons: Map<ItemStackKey, BufferedImage>,
+    labels: Map<Component, BufferedImage>?,
+    labelWidths: Map<Component, Int>?
+) : RecipeImageGenerator<StonecuttingRecipeInfo>(
+    recipeInfo, icons, labels, labelWidths,
+    baseImage = stonecuttingBase,
+    baseWidth = 168,
+    height = if (labels != null) 160 else 88,
+    labelsStartY = 86
+) {
+    override fun Graphics2D.drawSlots() {
+        drawImage(icons[recipeInfo.slot.uniqueKey]!!, 10, 38, null)
+        drawImage(icons[recipeInfo.output.uniqueKey]!!, 53, 12, null)
+        drawImage(icons[recipeInfo.output.uniqueKey]!!, 120, 38, null)
     }
 
     companion object {
-        val stonecuttingBase: BufferedImage by lazy { RecipeImageGenerator.loadTexture("stonecutting_base.png") }
+        val stonecuttingBase: BufferedImage by lazy { loadTexture("stonecutting_base.png") }
     }
 }
