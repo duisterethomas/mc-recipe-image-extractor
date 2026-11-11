@@ -68,7 +68,7 @@ class RecipesExporter {
         return step3
     }
 
-    private fun exportGroup(group: List<RecipeInfo>, icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>? = null, labelWidths: Map<Component, Int>? = null) {
+    private fun exportGroup(group: List<RecipeInfo>, icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>? = null, labelWidths: Map<Component, Int>? = null) {
         for(recipeInfo in group) writeRecipeImage(recipeInfo, recipeInfo.imageGenerator(icons, labels, labelWidths).generate())
 
         if(group.size == 1) return

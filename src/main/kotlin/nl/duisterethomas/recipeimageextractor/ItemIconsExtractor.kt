@@ -14,7 +14,7 @@ class ItemIconsExtractor(
     private val exportDir: Path,
 ) {
     private val chunks = itemStacks.chunked(1000).mapIndexed { index, itemStacks -> Chunk(itemStacks, index) }
-    lateinit var icons: Map<String, BufferedImage>
+    lateinit var icons: Map<ItemStackKey, BufferedImage>
 
     fun exportIcons(client: Minecraft) {
         client.sendMessage("Generating icons")
@@ -27,7 +27,7 @@ class ItemIconsExtractor(
     }
 
     fun importIcons() {
-        icons = HashMap<String, BufferedImage>().also {
+        icons = HashMap<ItemStackKey, BufferedImage>().also {
             for(chunk in chunks) it += chunk.importIcons()
         }
     }
@@ -66,7 +66,7 @@ class ItemIconsExtractor(
             nativeImage.use { ImageIO.write(it.toStraightAlpha(), "PNG", iconsPath.toFile()) }
         }
 
-        fun importIcons(): Map<String, BufferedImage> {
+        fun importIcons(): Map<ItemStackKey, BufferedImage> {
             val iconsImage = ImageIO.read(iconsPath.toFile()).asARGB()
 
             return itemStacks.mapIndexed { index, itemStack ->

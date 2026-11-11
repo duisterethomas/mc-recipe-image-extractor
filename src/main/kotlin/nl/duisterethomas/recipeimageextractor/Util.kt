@@ -2,9 +2,11 @@ package nl.duisterethomas.recipeimageextractor
 
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
+import net.minecraft.core.component.DataComponents
 import net.minecraft.world.item.ItemStack
 import net.minecraft.network.chat.Component
-import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.armortrim.ArmorTrim
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.awt.AlphaComposite
@@ -19,7 +21,13 @@ fun <T> Array<out T>.getOrLast(index: Int): T? {
     return if (index in 0..lastIndex) get(index) else get(lastIndex)
 }
 
-val ItemStack.uniqueKey: String get() = "${BuiltInRegistries.ITEM.getKey(item)}:$count"
+data class ItemStackKey(
+    val item: Item,
+    val count: Int,
+    val trim: ArmorTrim?
+)
+
+val ItemStack.uniqueKey: ItemStackKey get() = ItemStackKey(item, count, get(DataComponents.TRIM))
 
 fun BufferedImage.asARGB(): BufferedImage {
     if(type == BufferedImage.TYPE_INT_ARGB) return this

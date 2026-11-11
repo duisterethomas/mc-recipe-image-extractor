@@ -14,7 +14,7 @@ interface RecipeInfo {
     val recipeBasePath: String
     val recipePath: String
     val itemStacks: List<ItemStack>
-    fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>? = null, labelWidths: Map<Component, Int>? = null): RecipeImageGenerator
+    fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>? = null, labelWidths: Map<Component, Int>? = null): RecipeImageGenerator
 }
 
 data class CraftingRecipeInfo(
@@ -47,7 +47,7 @@ data class CraftingRecipeInfo(
             ).filterNotNull().distinct()
         }
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return CraftingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }
@@ -61,7 +61,7 @@ data class StonecuttingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return StonecuttingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }
@@ -75,7 +75,7 @@ data class SmeltingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return SmeltingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }
@@ -89,7 +89,7 @@ data class BlastingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return BlastingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }
@@ -103,7 +103,7 @@ data class SmokingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return SmokingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }
@@ -117,7 +117,7 @@ data class CampfireCookingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slot, output).distinct()
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return CampfireCookingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }
@@ -133,7 +133,7 @@ data class SmithingRecipeInfo(
     override val itemStacks: List<ItemStack>
         get() = listOf(slotTemplate, slotBase, slotAddition, output).distinct()
 
-    override fun imageGenerator(icons: Map<String, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
+    override fun imageGenerator(icons: Map<ItemStackKey, BufferedImage>, labels: Map<Component, BufferedImage>?, labelWidths: Map<Component, Int>?): RecipeImageGenerator {
         return SmithingRecipeImageGenerator(this, icons, labels, labelWidths)
     }
 }

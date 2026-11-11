@@ -9,6 +9,7 @@ import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.crafting.RecipeHolder
 import net.minecraft.world.item.crafting.SmeltingRecipe
 import net.minecraft.world.item.crafting.SmithingRecipe
+import net.minecraft.world.item.crafting.SmithingRecipeInput
 import net.minecraft.world.item.crafting.SmithingTransformRecipe
 import net.minecraft.world.item.crafting.SmithingTrimRecipe
 import net.minecraft.world.item.crafting.SmokingRecipe
@@ -168,14 +169,28 @@ fun convertSmithingRecipe(recipe: RecipeHolder<SmithingRecipe>, provider: Holder
     val recipeInfos = ArrayList<SmithingRecipeInfo>()
 
     repeat(maxStacksSize) { index ->
+        val templateStack = template.items.getOrLast(index)!!
+        val baseStack = base.items.getOrLast(index)!!
+        val additionStack = addition.items.getOrLast(index)!!
+
+        val result = value.assemble(
+            SmithingRecipeInput(
+                templateStack,
+                baseStack,
+                additionStack
+            ),
+            provider
+        )
+        if (result.isEmpty) return@repeat
+
         recipeInfos.add(
             SmithingRecipeInfo(
                 recipePath,
                 if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
-                template.items.getOrLast(index)!!,
-                base.items.getOrLast(index)!!,
-                addition.items.getOrLast(index)!!,
-                value.getResultItem(provider)
+                templateStack,
+                baseStack,
+                additionStack,
+                result
             )
         )
     }

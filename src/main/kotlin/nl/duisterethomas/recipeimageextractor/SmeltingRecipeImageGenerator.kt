@@ -7,7 +7,7 @@ import java.lang.Integer.max
 
 class SmeltingRecipeImageGenerator(
     private val recipeInfo: SmeltingRecipeInfo,
-    private val icons: Map<String, BufferedImage>,
+    private val icons: Map<ItemStackKey, BufferedImage>,
     private val labels: Map<Component, BufferedImage>?,
     private val labelWidths: Map<Component, Int>?
 ) : RecipeImageGenerator {

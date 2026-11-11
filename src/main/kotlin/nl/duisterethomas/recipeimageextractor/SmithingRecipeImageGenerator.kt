@@ -7,7 +7,7 @@ import java.lang.Integer.max
 
 class SmithingRecipeImageGenerator(
     private val recipeInfo: SmithingRecipeInfo,
-    private val icons: Map<String, BufferedImage>,
+    private val icons: Map<ItemStackKey, BufferedImage>,
     private val labels: Map<Component, BufferedImage>?,
     private val labelWidths: Map<Component, Int>?
 ) : RecipeImageGenerator {

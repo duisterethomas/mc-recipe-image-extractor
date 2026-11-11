@@ -7,7 +7,7 @@ import java.lang.Integer.max
 
 class CampfireCookingRecipeImageGenerator(
     private val recipeInfo: CampfireCookingRecipeInfo,
-    private val icons: Map<String, BufferedImage>,
+    private val icons: Map<ItemStackKey, BufferedImage>,
     private val labels: Map<Component, BufferedImage>?,
     private val labelWidths: Map<Component, Int>?
 ) : RecipeImageGenerator {
