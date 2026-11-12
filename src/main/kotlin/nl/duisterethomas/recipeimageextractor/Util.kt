@@ -29,8 +29,12 @@ fun BufferedImage.asARGB(): BufferedImage {
     if(type == BufferedImage.TYPE_INT_ARGB) return this
     return BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB).apply {
         val graphics = graphics
-        graphics.drawImage(this@asARGB, 0, 0, null)
-        graphics.dispose()
+        try {
+            graphics.drawImage(this@asARGB, 0, 0, null)
+        }
+        finally {
+            graphics.dispose()
+        }
     }
 }
 
@@ -51,12 +55,16 @@ fun NativeImage.toStraightAlpha(): BufferedImage {
         }
     }
 
-    val straight = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-    val graphics = straight.createGraphics()
-    graphics.composite = AlphaComposite.Src
-    graphics.drawImage(premultiplied, 0, 0, null)
-    graphics.dispose()
-    return straight
+    return BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB).apply {
+        val graphics = createGraphics()
+        try {
+            graphics.composite = AlphaComposite.Src
+            graphics.drawImage(premultiplied, 0, 0, null)
+        }
+        finally {
+            graphics.dispose()
+        }
+    }
 }
 
 fun Minecraft.sendMessage(message: String) {
