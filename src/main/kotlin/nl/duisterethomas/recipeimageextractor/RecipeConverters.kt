@@ -39,119 +39,104 @@ fun convertCraftingRecipe(recipe: RecipeHolder<CraftingRecipe>, provider: Holder
     adapter.placeRecipe(3, 3, -1, recipe, ingredients.iterator(),0)
 
     val maxStacksSize = ingredients.maxOfOrNull { it.items.size } ?: 0
+    val result = recipe.value().getResultItem(provider)
 
-    val recipeInfos = ArrayList<CraftingRecipeInfo>()
-
-    repeat(maxStacksSize) { index ->
-        recipeInfos.add(
-            CraftingRecipeInfo(
-                recipePath,
-                if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
-                adapter.slots[0]?.getOrLast(index),
-                adapter.slots[1]?.getOrLast(index),
-                adapter.slots[2]?.getOrLast(index),
-                adapter.slots[3]?.getOrLast(index),
-                adapter.slots[4]?.getOrLast(index),
-                adapter.slots[5]?.getOrLast(index),
-                adapter.slots[6]?.getOrLast(index),
-                adapter.slots[7]?.getOrLast(index),
-                adapter.slots[8]?.getOrLast(index),
-                recipe.value().getResultItem(provider)
-            )
+    return List(maxStacksSize) { index ->
+        CraftingRecipeInfo(
+            recipePath,
+            if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
+            adapter.slots[0]?.getOrLast(index),
+            adapter.slots[1]?.getOrLast(index),
+            adapter.slots[2]?.getOrLast(index),
+            adapter.slots[3]?.getOrLast(index),
+            adapter.slots[4]?.getOrLast(index),
+            adapter.slots[5]?.getOrLast(index),
+            adapter.slots[6]?.getOrLast(index),
+            adapter.slots[7]?.getOrLast(index),
+            adapter.slots[8]?.getOrLast(index),
+            result
         )
     }
-
-    return recipeInfos
 }
 
 fun convertSmeltingRecipe(recipe: RecipeHolder<SmeltingRecipe>, provider: HolderLookup.Provider): List<SmeltingRecipeInfo> {
     val recipePath = "smelting/${recipe.id.namespace}/${recipe.id.path}"
 
-    val ingredient = recipe.value().ingredients[0]
+    val items = recipe.value().ingredients[0].items
+    val result = recipe.value().getResultItem(provider)
 
-    val recipeInfos = ArrayList<SmeltingRecipeInfo>()
-
-    for((index, items) in ingredient.items.withIndex()) {
-        recipeInfos.add(SmeltingRecipeInfo(
+    return items.mapIndexed { index, stack ->
+        SmeltingRecipeInfo(
             recipePath,
-            if(ingredient.items.size > 1) "${recipePath}_$index" else recipePath,
-            items,
-            recipe.value().getResultItem(provider)
-        ))
+            if(items.size > 1) "${recipePath}_$index" else recipePath,
+            stack,
+            result
+        )
     }
-    return recipeInfos
 }
 
 fun convertBlastingRecipe(recipe: RecipeHolder<BlastingRecipe>, provider: HolderLookup.Provider): List<BlastingRecipeInfo> {
     val recipePath = "blasting/${recipe.id.namespace}/${recipe.id.path}"
 
-    val ingredient = recipe.value().ingredients[0]
+    val items = recipe.value().ingredients[0].items
+    val result = recipe.value().getResultItem(provider)
 
-    val recipeInfos = ArrayList<BlastingRecipeInfo>()
-
-    for((index, items) in ingredient.items.withIndex()) {
-        recipeInfos.add(BlastingRecipeInfo(
+    return items.mapIndexed { index, stack ->
+        BlastingRecipeInfo(
             recipePath,
-            if(ingredient.items.size > 1) "${recipePath}_$index" else recipePath,
-            items,
-            recipe.value().getResultItem(provider)
-        ))
+            if(items.size > 1) "${recipePath}_$index" else recipePath,
+            stack,
+            result
+        )
     }
-    return recipeInfos
 }
 
 fun convertSmokingRecipe(recipe: RecipeHolder<SmokingRecipe>, provider: HolderLookup.Provider): List<SmokingRecipeInfo> {
     val recipePath = "smoking/${recipe.id.namespace}/${recipe.id.path}"
 
-    val ingredient = recipe.value().ingredients[0]
+    val items = recipe.value().ingredients[0].items
+    val result = recipe.value().getResultItem(provider)
 
-    val recipeInfos = ArrayList<SmokingRecipeInfo>()
-
-    for((index, items) in ingredient.items.withIndex()) {
-        recipeInfos.add(SmokingRecipeInfo(
+    return items.mapIndexed { index, stack ->
+        SmokingRecipeInfo(
             recipePath,
-            if(ingredient.items.size > 1) "${recipePath}_$index" else recipePath,
-            items,
-            recipe.value().getResultItem(provider)
-        ))
+            if(items.size > 1) "${recipePath}_$index" else recipePath,
+            stack,
+            result
+        )
     }
-    return recipeInfos
 }
 
 fun convertCampfireCookingRecipe(recipe: RecipeHolder<CampfireCookingRecipe>, provider: HolderLookup.Provider): List<CampfireCookingRecipeInfo> {
     val recipePath = "campfire_cooking/${recipe.id.namespace}/${recipe.id.path}"
 
-    val ingredient = recipe.value().ingredients[0]
+    val items = recipe.value().ingredients[0].items
+    val result = recipe.value().getResultItem(provider)
 
-    val recipeInfos = ArrayList<CampfireCookingRecipeInfo>()
-
-    for((index, items) in ingredient.items.withIndex()) {
-        recipeInfos.add(CampfireCookingRecipeInfo(
+    return items.mapIndexed { index, stack ->
+        CampfireCookingRecipeInfo(
             recipePath,
-            if(ingredient.items.size > 1) "${recipePath}_$index" else recipePath,
-            items,
-            recipe.value().getResultItem(provider)
-        ))
+            if(items.size > 1) "${recipePath}_$index" else recipePath,
+            stack,
+            result
+        )
     }
-    return recipeInfos
 }
 
 fun convertStonecuttingRecipe(recipe: RecipeHolder<StonecutterRecipe>, provider: HolderLookup.Provider): List<StonecuttingRecipeInfo> {
     val recipePath = "stonecutting/${recipe.id.namespace}/${recipe.id.path}"
 
-    val ingredient = recipe.value().ingredients[0]
+    val items = recipe.value().ingredients[0].items
+    val result = recipe.value().getResultItem(provider)
 
-    val recipeInfos = ArrayList<StonecuttingRecipeInfo>()
-
-    for((index, items) in ingredient.items.withIndex()) {
-        recipeInfos.add(StonecuttingRecipeInfo(
+    return items.mapIndexed { index, stack ->
+        StonecuttingRecipeInfo(
             recipePath,
-            if(ingredient.items.size > 1) "${recipePath}_$index" else recipePath,
-            items,
-            recipe.value().getResultItem(provider)
-        ))
+            if(items.size > 1) "${recipePath}_$index" else recipePath,
+            stack,
+            result
+        )
     }
-    return recipeInfos
 }
 
 fun convertSmithingRecipe(recipe: RecipeHolder<SmithingRecipe>, provider: HolderLookup.Provider): List<SmithingRecipeInfo> {
@@ -166,9 +151,7 @@ fun convertSmithingRecipe(recipe: RecipeHolder<SmithingRecipe>, provider: Holder
 
     val maxStacksSize = arrayOf(template, base, addition).maxOf { it.items.size }
 
-    val recipeInfos = ArrayList<SmithingRecipeInfo>()
-
-    repeat(maxStacksSize) { index ->
+    return (0 until maxStacksSize).mapNotNull { index ->
         val templateStack = template.items.getOrLast(index)!!
         val baseStack = base.items.getOrLast(index)!!
         val additionStack = addition.items.getOrLast(index)!!
@@ -181,19 +164,15 @@ fun convertSmithingRecipe(recipe: RecipeHolder<SmithingRecipe>, provider: Holder
             ),
             provider
         )
-        if (result.isEmpty) return@repeat
+        if (result.isEmpty) return@mapNotNull null
 
-        recipeInfos.add(
-            SmithingRecipeInfo(
-                recipePath,
-                if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
-                templateStack,
-                baseStack,
-                additionStack,
-                result
-            )
+        SmithingRecipeInfo(
+            recipePath,
+            if(maxStacksSize > 1) "${recipePath}_$index" else recipePath,
+            templateStack,
+            baseStack,
+            additionStack,
+            result
         )
     }
-
-    return recipeInfos
 }
