@@ -9,8 +9,6 @@ import com.mojang.blaze3d.vertex.VertexSorting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.Minecraft.ON_OSX
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.renderer.FogRenderer
-import net.minecraft.client.renderer.GameRenderer
 import org.joml.Matrix4f
 import org.joml.Matrix4fStack
 
@@ -26,37 +24,31 @@ fun renderToTexture(
 
     val textureTarget = TextureTarget(width, height, true, ON_OSX)
     textureTarget.setClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-    textureTarget.resize(width, height, ON_OSX)
+    textureTarget.clear(ON_OSX)
+    val matrixStack: Matrix4fStack = RenderSystem.getModelViewStack()
 
     try {
-        val matrixStack: Matrix4fStack = RenderSystem.getModelViewStack()
         matrixStack.pushMatrix()
-        RenderSystem.applyModelViewMatrix()
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT or GlConst.GL_COLOR_BUFFER_BIT, ON_OSX)
-        textureTarget.bindWrite(true)
-        FogRenderer.setupNoFog()
-        RenderSystem.enableCull()
 
+        textureTarget.bindWrite(true)
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT or GlConst.GL_COLOR_BUFFER_BIT, ON_OSX)
         RenderSystem.viewport(0, 0, width, height)
 
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, ON_OSX)
-        val matrix4f = Matrix4f().setOrtho(
-            0.0f,
-            (width.toDouble() / scaleFactor).toFloat(),
-            (height.toDouble() / scaleFactor).toFloat(),
-            0.0f,
-            1000.0f,
-            3000.0f
+        RenderSystem.setProjectionMatrix(
+            Matrix4f().setOrtho(
+                0.0f,
+                (width.toDouble() / scaleFactor).toFloat(),
+                (height.toDouble() / scaleFactor).toFloat(),
+                0.0f,
+                1000.0f,
+                3000.0f
+            ),
+            VertexSorting.DISTANCE_TO_ORIGIN
         )
-        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.DISTANCE_TO_ORIGIN)
-        val matrixStack2 = RenderSystem.getModelViewStack()
-        matrixStack2.identity()
-        matrixStack2.translate(0.0f, 0.0f, -2000.0f)
+        matrixStack.identity()
+        matrixStack.translate(0.0f, 0.0f, -2000.0f)
         RenderSystem.applyModelViewMatrix()
         Lighting.setupFor3DItems()
-
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
-        RenderSystem.setShader(GameRenderer::getPositionTexShader)
 
         RenderSystem.enableBlend()
         RenderSystem.defaultBlendFunc()
@@ -64,18 +56,6 @@ fun renderToTexture(
         val graphics = GuiGraphics(client, client.renderBuffers().bufferSource())
         block(graphics)
         graphics.flush()
-
-        RenderSystem.disableBlend()
-
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, ON_OSX)
-
-        textureTarget.unbindWrite()
-        matrixStack.popMatrix()
-        matrixStack.pushMatrix()
-        RenderSystem.applyModelViewMatrix()
-        textureTarget.blitToScreen(width, height)
-        matrixStack.popMatrix()
-        RenderSystem.applyModelViewMatrix()
 
         textureTarget.unbindWrite()
 
@@ -87,6 +67,8 @@ fun renderToTexture(
         return image
     }
     finally {
+        matrixStack.popMatrix()
+        RenderSystem.applyModelViewMatrix()
         textureTarget.destroyBuffers()
     }
 }
