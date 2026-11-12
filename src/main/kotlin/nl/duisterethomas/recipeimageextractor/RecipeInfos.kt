@@ -1,13 +1,12 @@
 package nl.duisterethomas.recipeimageextractor
 
-import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
-import net.minecraft.world.item.crafting.RecipeManager
 import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.Recipe
 import net.minecraft.world.item.crafting.RecipeHolder
 import net.minecraft.world.item.crafting.RecipeInput
+import net.minecraft.world.level.Level
 import java.awt.image.BufferedImage
 
 interface RecipeInfo {
@@ -143,11 +142,11 @@ data class RecipeGroup(
     val subGroups: List<List<RecipeInfo>>
 )
 
-class RecipeInfos(private val recipeManager: RecipeManager, private val namespace: String? = null) {
-    val registryLookup = Minecraft.getInstance().level!!.registryAccess()
+class RecipeInfos(private val level: Level, private val namespace: String? = null) {
+    val registryLookup = level.registryAccess()
 
     private fun <I : RecipeInput, T : Recipe<I>> recipesFor(type: RecipeType<T>): List<RecipeHolder<T>> =
-        recipeManager.getAllRecipesFor(type)
+        level.recipeManager.getAllRecipesFor(type)
             .filterNot { it.value().isSpecial }
             .filter { namespace == null || it.id.namespace == namespace }
 

@@ -31,7 +31,7 @@ class RecipesExporter {
 
         val step2 = step1.thenRunAsync({
             client.sendMessage("Gathering icons and labels")
-            recipeInfos = RecipeInfos(client.level!!.recipeManager, namespace)
+            recipeInfos = RecipeInfos(client.level!!, namespace)
             client.sendMessage("Gathered ${recipeInfos.all.size} recipes for extraction")
 
             itemIconsExtractor = ItemIconsExtractor(
